@@ -60,7 +60,7 @@ class DirectedAcyclicWorkflowGraph:
 
     @property
     def nodes(self) -> list[Node]:
-        return self._nodes.values()
+        return list(self._nodes.values())
 
     @property
     def roots(self) -> list[Node]:
