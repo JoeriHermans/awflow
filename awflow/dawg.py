@@ -33,11 +33,13 @@ class DirectedAcyclicWorkflowGraph:
         return node
 
     def program(self) -> List[Node]:
-        program_order = []
+        program = []
         for node in self.bfs():
-            program_order.append(node)
+            if node in program:
+                continue
+            program.append(node)
 
-        return program_order
+        return program
 
     def bfs(self) -> Generator[Node, None]:
         queue = Queue()
