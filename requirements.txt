@@ -1,1 +1,3 @@
 cloudpickle
+coloredlogs
+sphinx
