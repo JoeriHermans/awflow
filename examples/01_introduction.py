@@ -30,4 +30,4 @@ def dependency_of_both_graphs(task_index):
     print(task_index)
 
 
-aw.execute()
+aw.execute(generate_code=True)

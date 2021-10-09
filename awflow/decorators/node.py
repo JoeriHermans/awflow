@@ -5,7 +5,7 @@ Generic decorators for workflow nodes.
 from __future__ import annotations
 
 import awflow
-import awflow.hooks as hooks
+import awflow.plugins as plugins
 
 from awflow.node import Node
 from awflow.utils.decorator import parameterized
@@ -20,7 +20,7 @@ from typing import Union
 @parameterized
 def conda(f: Callable, environment: str) -> Callable:
     node = add_and_get_node(f)
-    hooks.conda.set_environment(node, environment)
+    plugins.conda.set_environment(node, environment)
 
     return f
 
