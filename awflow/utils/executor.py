@@ -2,7 +2,9 @@ r"""
 Utilities that are specific to *currently* allocated backend.
 """
 
+import cloudpickle as pickle
 import importlib
+import os
 
 from awflow.dawg import DirectedAcyclicWorkflowGraph as DAWG
 from awflow.utils.backend import autodetect
@@ -26,3 +28,10 @@ def execute(workflow: Optional[DAWG] = None, backend: str = autodetect(), **kwar
     module = importlib.import_module('awflow.backend.' + backend)
     executor = getattr(module, 'execute')
     executor(workflow, **kwargs)
+
+
+def generate_executables(workflow: DAWG, directory: str) -> None:
+    for node in workflow.nodes:
+        subroutine = pickle.dumps(node.f)
+        with open(directory + '/' + str(node.identifier) + '.code', 'wb') as f:
+            f.write(subroutine)

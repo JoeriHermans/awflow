@@ -7,9 +7,12 @@ import os
 import tempfile
 
 from awflow.dawg import DirectedAcyclicWorkflowGraph as DAWG
+from awflow.utils.executor import generate_executables
 
 
 def execute(workflow: DAWG, base: str = '.workflows', **kwargs) -> None:
+    # Preparing the execution files.
     os.makedirs(base, exist_ok=True)  # Create the base directory
     directory = tempfile.mkdtemp(dir=base)
-    print(directory)
+    # Generate the executables for the graph.
+    generate_executables(workflow=workflow, directory=directory)
