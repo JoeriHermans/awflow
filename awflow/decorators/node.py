@@ -48,6 +48,14 @@ def name(f: Callable, name: str) -> Callable:
 
 
 @parameterized
+def tasks(f: Callable, n: int) -> Callable:
+    node = add_and_get_node(f)
+    node.tasks = n
+
+    return f
+
+
+@parameterized
 def virtualenv(f: Callable, name: str) -> Callable:
     node = add_and_get_node(f)
     node["virtualenv"] = name

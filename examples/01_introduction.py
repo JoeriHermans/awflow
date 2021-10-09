@@ -15,7 +15,6 @@ def dependency_of_graph1():
 
 def graph2():
     print("This is the second graph")
-    exit(0)
 
 
 @aw.dependency(graph2)
@@ -25,9 +24,10 @@ def dependency_of_graph2():
 
 
 @aw.dependency([dependency_of_graph1, dependency_of_graph2])
-def dependency_of_both_graphs():
+@aw.tasks(10)
+def dependency_of_both_graphs(task_index):
     print("Only after both subgraphs are done.")
-    exit(1)
+    print(task_index)
 
 
-aw.execute()
+aw.execute(backend='standalone', generate_code=True)
