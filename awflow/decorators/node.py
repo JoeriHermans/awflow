@@ -45,3 +45,11 @@ def name(f: Callable, name: str) -> Callable:
     node.name = name
 
     return f
+
+
+@parameterized
+def virtualenv(f: Callable, name: str) -> Callable:
+    node = add_and_get_node(f)
+    node["virtualenv"] = name
+
+    return f

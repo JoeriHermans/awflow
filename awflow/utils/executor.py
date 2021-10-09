@@ -7,6 +7,7 @@ import importlib
 import os
 
 from awflow.dawg import DirectedAcyclicWorkflowGraph as DAWG
+from awflow.node import Node
 from awflow.utils.backend import autodetect
 from awflow.utils.backend import available_backends
 
@@ -30,8 +31,15 @@ def execute(workflow: Optional[DAWG] = None, backend: str = autodetect(), **kwar
     executor(workflow, **kwargs)
 
 
-def generate_executables(workflow: DAWG, directory: str) -> None:
+def executable_name(node: Node) -> str:
+    return str(node.identifier) + '.code'
+
+
+def generate_executables(workflow: DAWG, dir: str) -> None:
+    cwd = os.getcwd()
+    os.chdir(dir)
     for node in workflow.nodes:
         subroutine = pickle.dumps(node.f)
-        with open(directory + '/' + str(node.identifier) + '.code', 'wb') as f:
+        with open(executable_name(node), 'wb') as f:
             f.write(subroutine)
+    os.chdir(cwd)
