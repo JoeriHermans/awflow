@@ -28,6 +28,4 @@ def dependency_of_both_graphs():
     print("Only after both subgraphs are done.")
 
 
-program = aw.workflow.program()  # Get the pipeline in program order.
-for subroutine in program:
-    print(subroutine.name)
+aw.execute()
