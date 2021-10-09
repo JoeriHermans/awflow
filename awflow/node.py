@@ -42,7 +42,7 @@ class Node:
 
     @property
     def name(self) -> str:
-        if "name" in self._attributes["name"].keys():
+        if "name" in self._attributes.keys():
             name = self._attributes["name"]
         else:
             name = self.f.__name__

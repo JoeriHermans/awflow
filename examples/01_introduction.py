@@ -18,6 +18,7 @@ def graph2():
 
 
 @aw.dependency(graph2)
+@aw.name("A different name")
 def dependency_of_graph2():
     print("Dependency of graph2.")
 
@@ -25,3 +26,8 @@ def dependency_of_graph2():
 @aw.dependency([dependency_of_graph1, dependency_of_graph2])
 def dependency_of_both_graphs():
     print("Only after both subgraphs are done.")
+
+
+program = aw.workflow.program()  # Get the pipeline in program order.
+for subroutine in program:
+    print(subroutine.name)

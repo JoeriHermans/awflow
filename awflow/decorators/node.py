@@ -17,6 +17,14 @@ from typing import Union
 
 
 @parameterized
+def conda(f: Callable, environment: str) -> Callable:
+    node = add_and_get_node(f)
+    node["conda"] = environment
+
+    return f
+
+
+@parameterized
 def dependency(f: Callable, dependencies: Union[list[Node], Node]) -> Callable:
     # Check if the dependency is a list of dependencies.
     if not is_iterable(dependencies):
@@ -32,8 +40,8 @@ def dependency(f: Callable, dependencies: Union[list[Node], Node]) -> Callable:
 
 
 @parameterized
-def conda(f: Callable, environment: str) -> Callable:
+def name(f: Callable, name: str) -> Callable:
     node = add_and_get_node(f)
-    node["conda"] = environment
+    node.name = name
 
     return f
