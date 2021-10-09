@@ -39,4 +39,4 @@ from awflow.utils.executor import execute
 ################################################################################
 from awflow.dawg import DirectedAcyclicWorkflowGraph as DAWG
 
-workflow = DAWG()
+workflow = DAWG()  # Too bad there is a PyPi package called `dawg`.

@@ -2,22 +2,27 @@ r"""
 Utilities that are specific to *currently* allocated backend.
 """
 
-import awflow.backend.slurm as slurm
-import awflow.backend.standalone as standalone
+import importlib
 
 from awflow.dawg import DirectedAcyclicWorkflowGraph as DAWG
 from awflow.utils.backend import autodetect
+from awflow.utils.backend import available_backends
 
 from types import ModuleType
+from typing import Optional
 from typing import Union
 
 
 
-def execute(workflow: DAWG = None, backend: ModuleType = autodetect()) -> None:
+def execute(workflow: Optional[DAWG] = None, backend: str = autodetect(), **kwargs) -> None:
+    # Verify the specified backend.
+    backends = available_backends()
+    if backend not in backends:
+        raise ValueError('`' + backend + '` is not available! Available: ' + str(backends))
+
     import awflow
     if workflow is None:
         workflow = awflow.workflow  # Use default workflow
-
-    print(workflow)
-
-    raise NotImplementedError
+    module = importlib.import_module('awflow.backend.' + backend)
+    executor = getattr(module, 'execute')
+    executor(workflow, **kwargs)
