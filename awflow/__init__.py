@@ -31,17 +31,16 @@ from .version import __version__
 import awflow.utils
 
 from awflow.decorators import *
+from awflow.dawg import DirectedAcyclicWorkflowGraph as DAWG
 
 
 ################################################################################
 # Default compute graph definition
 ################################################################################
-workflow = None
+workflow = DAWG()
 
 
 ################################################################################
 # Autodetect compute backend and allocate its executor
 ################################################################################
 executor = awflow.utils.backend.autodetect()
-
-print(executor)

@@ -8,7 +8,11 @@ from awflow.node import Node
 
 from typing import Any
 from typing import Callable
+from typing import Generator
+from typing import List
 from typing import Union
+
+from queue import Queue
 
 
 class DirectedAcyclicWorkflowGraph:
@@ -27,6 +31,30 @@ class DirectedAcyclicWorkflowGraph:
             node = None
 
         return node
+
+    def program(self) -> List[Node]:
+        program_order = []
+        for node in self.bfs():
+            program_order.append(node)
+
+        return program_order
+
+    def bfs(self) -> Generator[Node, None]:
+        queue = Queue()
+        if len(self.roots) > 0:
+            for root in self.roots:
+                queue.put(root)
+            yield from self._bfs(queue)
+        else:
+            yield from []
+
+    def _bfs(self, queue: Queue) -> Generator[Node, None]:
+        if not queue.empty():
+            node = queue.get()
+            yield node
+            for child in node.children:
+                queue.put(child)
+            yield from self._bfs(queue)
 
     @property
     def nodes(self) -> list[Node]:

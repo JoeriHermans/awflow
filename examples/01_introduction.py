@@ -1,5 +1,7 @@
 import awflow as aw
 
+from awflow import workflow
+
 
 
 def graph1():

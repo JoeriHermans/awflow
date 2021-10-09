@@ -17,9 +17,6 @@ def add_and_get_node(f: Callable) -> Node:
     r"""
     Adds a workflow node to the workflow compute graph.
     """
-    # Prepare the workflow context
-    if awflow.workflow is None:
-        awflow.workflow = DAWG()
     # Is the function already in the workflow?
     node = awflow.workflow.find_node(f)
     if node is None:
