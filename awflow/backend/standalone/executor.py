@@ -23,7 +23,6 @@ def execute(workflow: DAWG, dir: str = '.workflows', **kwargs) -> None:
     for node in program:
         return_code = execute_node(dir=directory, node=node)
         if return_code != 0:  # Stop program execution on non-zero return code.
-            print("BREAKING")
             break
 
 
