@@ -23,10 +23,10 @@ def execute(workflow: DAWG, dir: str = '.workflows', **kwargs) -> None:
     # Preparing the execution files.
     os.makedirs(dir, exist_ok=True)  # Create the base directory
     directory = tempfile.mkdtemp(dir=dir)
+    plugins.apply_defaults(backend=BACKEND, workflow=workflow, **kwargs)
     # Generate the executables for the graph.
     generate_executables(workflow=workflow, dir=directory)
     # Execute the workflow in BFS (program) order.
-    plugins.apply_defaults(backend=BACKEND, workflow=workflow, **kwargs)
     program = workflow.program()
     for node in program:
         return_code = execute_generated_code(dir=directory, node=node)

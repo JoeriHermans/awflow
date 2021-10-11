@@ -60,7 +60,7 @@ def cpus(f: Callable, n: int) -> Callable:
 def cpus_and_memory(f: Callable, n: int, memory: str) -> Callable:
     node = add_and_get_node(f)
     node['cpus'] = n
-    node['memory'] = memory.lower()
+    node['memory'] = memory.upper()
 
     return f
 

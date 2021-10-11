@@ -19,9 +19,10 @@ from typing import Union
 
 def execute(workflow: Optional[DAWG] = None, backend: str = autodetect(), **kwargs) -> None:
     # Verify the specified backend.
-    backends = available_backends()
-    if backend not in backends:
-        raise ValueError('`' + backend + '` is not available! Available: ' + str(backends))
+    # TODO Do not forget to uncomment.
+    # backends = available_backends()
+    # if backend not in backends:
+    #    raise ValueError('`' + backend + '` is not available! Available: ' + str(backends))
 
     import awflow
     if workflow is None:
