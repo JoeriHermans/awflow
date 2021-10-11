@@ -54,3 +54,36 @@ def tasks(f: Callable, n: int) -> Callable:
     node.tasks = n
 
     return f
+
+
+@parameterized
+def cpus(f: Callable, n: int) -> Callable:
+    node = add_and_get_node(f)
+    node['cpus'] = n
+
+    return f
+
+
+@parameterized
+def cpus_and_memory(f: Callable, n: int, memory: str) -> Callable:
+    node = add_and_get_node(f)
+    node['cpus'] = n
+    node['memory'] = memory.lower()
+
+    return f
+
+
+@parameterized
+def gpus(f: Callable, n: int) -> Callable:
+    node = add_and_get_node(f)
+    node['gpus'] = n
+
+    return f
+
+
+@parameterized
+def memory(f: Callable, memory: str) -> Callable:
+    node = add_and_get_node(f)
+    node['memory'] = memory.lower()
+
+    return f
