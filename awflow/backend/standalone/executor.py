@@ -20,23 +20,18 @@ BACKEND = 'standalone'
 def execute(workflow: DAWG, dir: str = '.workflows', **kwargs) -> None:
     # Check if code needs to be generated.
     generate_code = kwargs.get('generate_code', False)
-    if generate_code:
-        # Preparing the execution files.
-        os.makedirs(dir, exist_ok=True)  # Create the base directory
-        directory = tempfile.mkdtemp(dir=dir)
-        # Generate the executables for the graph.
-        generate_executables(workflow=workflow, dir=directory)
-        # Execute the workflow in BFS (program) order.
-        plugins.apply_defaults(backend=BACKEND, workflow=workflow, **kwargs)
-        program = workflow.program()
-        for node in program:
-            return_code = execute_generated_code(dir=directory, node=node)
-            if return_code != 0:  # Stop program execution on non-zero return code.
-                exit(return_code)
-    else:
-        program = workflow.program()
-        for node in program:
-            execute_node(node)
+    # Preparing the execution files.
+    os.makedirs(dir, exist_ok=True)  # Create the base directory
+    directory = tempfile.mkdtemp(dir=dir)
+    # Generate the executables for the graph.
+    generate_executables(workflow=workflow, dir=directory)
+    # Execute the workflow in BFS (program) order.
+    plugins.apply_defaults(backend=BACKEND, workflow=workflow, **kwargs)
+    program = workflow.program()
+    for node in program:
+        return_code = execute_generated_code(dir=directory, node=node)
+        if return_code != 0:  # Stop program execution on non-zero return code.
+            exit(return_code)
 
 
 def execute_generated_code(dir: str, node: Node) -> int:
