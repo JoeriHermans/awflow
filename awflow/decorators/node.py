@@ -87,3 +87,11 @@ def memory(f: Callable, memory: str) -> Callable:
     node['memory'] = memory.lower()
 
     return f
+
+
+@parameterized
+def timelimit(f: Callable, timelimit: str) -> Callable:
+    node = add_and_get_node(f)
+    node['timelimit'] = timelimit
+
+    return f
