@@ -5,7 +5,7 @@ from awflow.node import Node
 
 
 
-def apply_defaults(backend: str, node: None, **kwargs) -> None:
+def apply_defaults(backend: str, node: Node, **kwargs) -> None:
     if 'conda' not in node.attributes.keys():
         environment = kwargs.get('conda', None)
         if environment is None:

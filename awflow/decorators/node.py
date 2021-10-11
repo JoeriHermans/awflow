@@ -18,14 +18,6 @@ from typing import Union
 
 
 @parameterized
-def conda(f: Callable, environment: str) -> Callable:
-    node = add_and_get_node(f)
-    plugins.conda.set_environment(node, environment)
-
-    return f
-
-
-@parameterized
 def dependency(f: Callable, dependencies: Union[list[Node], Node]) -> Callable:
     # Check if the dependency is a list of dependencies.
     if not is_iterable(dependencies):

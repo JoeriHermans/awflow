@@ -38,7 +38,8 @@ def execute_generated_code(dir: str, node: Node) -> int:
     # Prepare the commands
     commands = []
     commands.extend(plugins.generate_before(backend=BACKEND, node=node))
-    commands.append('python -u -m awflow.bin.processor ' + dir + '/' + executable_name(node))
+    absolute_path = os.path.abspath(dir + '/' + executable_name(node))
+    commands.append('python -u -m awflow.bin.processor ' + absolute_path)
     commands.extend(plugins.generate_after(backend=BACKEND, node=node))
     # Generate the command string
     command = ' && '.join(commands)

@@ -6,6 +6,7 @@ from awflow.node import Node
 
 
 plugins = [
+    'awflow.plugins.chdir',
     'awflow.plugins.conda']
 
 
@@ -15,7 +16,7 @@ def apply_defaults(backend: str, workflow: DAWG, **kwargs):
         module = importlib.import_module(plugin)
         applier = getattr(module, 'apply_defaults')
         for node in workflow.nodes:
-            applier(backend, node)
+            applier(backend, node, **kwargs)
 
 
 def generate_before(backend: str, node: Node) -> list[str]:
