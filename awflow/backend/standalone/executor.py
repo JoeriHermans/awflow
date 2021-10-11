@@ -23,12 +23,12 @@ def execute(workflow: DAWG, dir: str = '.workflows', **kwargs) -> None:
         # Generate the executables for the graph.
         generate_executables(workflow=workflow, dir=directory)
         # Execute the workflow in BFS (program) order.
-        plugins.apply_defaults(workflow, **kwargs)
+        plugins.apply_defaults(backend='standalone', workflow=workflow, **kwargs)
         program = workflow.program()
         for node in program:
             return_code = execute_generated_code(dir=directory, node=node)
             if return_code != 0:  # Stop program execution on non-zero return code.
-                break
+                exit(return_code)
     else:
         program = workflow.program()
         for node in program:
@@ -38,8 +38,9 @@ def execute(workflow: DAWG, dir: str = '.workflows', **kwargs) -> None:
 def execute_generated_code(dir: str, node: Node) -> int:
     # Prepare the commands
     commands = []
-    commands.extend(plugins.generate(node))
+    commands.extend(plugins.generate_before(backend='standalone', node=node))
     commands.append('python -u -m awflow.bin.processor ' + dir + '/' + executable_name(node))
+    commands.extend(plugins.generate_after(backend='standalone', node=node))
     # Generate the command string
     command = ' && '.join(commands)
     if node.tasks > 1:
