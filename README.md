@@ -6,7 +6,9 @@ Pythonic reusable acyclic workflows. Execute code on HPC systems as if you execu
 
 - [ ] Developer requirements
 - [ ] Documentation
-- [ ] Enforce acyclicity of compute graph.
-- [ ] Pruning of compute graph based on postconditions (prevent re-execution).
+- [ ] Enforce acyclicity of compute graph
+- [ ] Logging directory
+- [ ] Pruning of compute graph based on postconditions (prevent re-execution)
 - [ ] README
-- [ ] `@aw.disable` decorator.
+- [ ] Utility scripts to manage workflows running on Slurm.
+- [ ] `@aw.disable` decorator
