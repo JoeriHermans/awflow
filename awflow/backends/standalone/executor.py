@@ -32,10 +32,10 @@ def execute(workflow: DAWG, dir: str = '.workflows', **kwargs) -> None:
 def execute_node(node: Node, dir: str) -> int:
     # Prepare the commands
     commands = []
-    commands.extend(plugins.generate_before(backend=BACKEND, node=node))
+    commands.extend(plugins.generate_before(node=node))
     absolute_path = os.path.abspath(dir + '/' + executable_name(node))
     commands.append('python -u -m awflow.bin.processor ' + absolute_path)
-    commands.extend(plugins.generate_after(backend=BACKEND, node=node))
+    commands.extend(plugins.generate_after(node=node))
     # Generate the command string
     command = ' && '.join(commands)
     if node.tasks > 1:

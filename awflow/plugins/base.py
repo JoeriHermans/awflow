@@ -6,6 +6,7 @@ from awflow.node import Node
 
 
 plugins = [
+    'awflow.plugins.chdir',
     'awflow.plugins.conda']
 
 
@@ -24,7 +25,7 @@ def generate_before(node: Node) -> list[str]:
     for plugin in plugins:
         module = importlib.import_module(plugin)
         generator = getattr(module, 'generate_before')
-        commands.extend(generator(backend, node))
+        commands.extend(generator(node))
 
     return commands
 
@@ -35,6 +36,6 @@ def generate_after(node: Node) -> list[str]:
     for plugin in plugins:
         module = importlib.import_module(plugin)
         generator = getattr(module, 'generate_after')
-        commands.extend(generator(backend, node))
+        commands.extend(generator(node))
 
     return commands

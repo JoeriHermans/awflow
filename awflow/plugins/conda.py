@@ -28,5 +28,5 @@ def generate_before(node: Node) -> list[str]:
         return []
 
 
-def generate_after(backend: str, node: Node) -> list[str]:
+def generate_after(node: Node) -> list[str]:
     return []

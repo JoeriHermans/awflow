@@ -5,7 +5,7 @@ from awflow.node import Node
 
 
 
-def apply_defaults(backend: str, node: Node, **kwargs) -> None:
+def apply_defaults(node: Node, **kwargs) -> None:
     if 'chdir' not in node.attributes.keys():
         cwd = kwargs.get('chdir', os.getcwd())
         set_working_directory(node, cwd)
@@ -17,12 +17,12 @@ def set_working_directory(node: Node, dir: str) -> None:
     node['chdir'] = dir
 
 
-def generate_before(backend: str, node: Node) -> list[str]:
+def generate_before(node: Node) -> list[str]:
     if 'chdir' in node.attributes.keys():
         return ['cd ' + node['chdir']]
     else:
         return []
 
 
-def generate_after(backend: str, node: Node) -> list[str]:
+def generate_after(node: Node) -> list[str]:
     return []

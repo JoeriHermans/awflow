@@ -1,3 +1,4 @@
+from . import chdir
 from . import conda
 
 from .base import apply_defaults
