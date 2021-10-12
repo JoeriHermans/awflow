@@ -1,9 +1,6 @@
 import awflow as aw
 import os
 
-from awflow import workflow
-
-
 
 def graph1():
     print(os.getcwd())
@@ -23,7 +20,6 @@ def graph2():
 
 @aw.dependency(graph2)
 @aw.name("A different name")
-@aw.chdir('/home/joeri/Downloads')
 def dependency_of_graph2():
     print(os.getcwd())
     print("Dependency of graph2.")
@@ -37,4 +33,5 @@ def dependency_of_both_graphs(task_index):
     print(task_index)
 
 
-aw.execute()
+if __name__ == '__main__':
+    aw.execute()
