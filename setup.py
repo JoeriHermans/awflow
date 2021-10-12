@@ -35,7 +35,6 @@ setup_requirements = [
 test_requirements = [
     'pytest>=3']
 
-# Install Hypothesis
 setup(
     author='Joeri Hermans',
     author_email='joeri@peinser.com',
@@ -50,11 +49,12 @@ setup(
         'Programming Language :: Python :: 3.9'
     ],
     description='Pythonic reusable acyclic workflows. Execute code on HPC systems as if you executed them on your laptop!',
+    extras_require={'dev': _load_requirements('requirements_dev.txt')},
+    include_package_data=True,
     install_requires=_load_requirements(),
+    keywords='awflow',
     license='BSD license',
     long_description=readme,
-    include_package_data=True,
-    keywords='awflow',
     name='awflow',
     packages=find_packages(include=['awflow', 'awflow.*']),
     setup_requires=setup_requirements,

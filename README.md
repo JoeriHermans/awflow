@@ -1,4 +1,4 @@
-Pythonic reusable acyclic workflows. Execute code on HPC systems as if you executed them on your personal computer!
+Reusable acyclic workflows in Python. Execute code on HPC systems as if you executed them on your personal computer!
 
 **Under development**, but it works.
 
@@ -39,7 +39,7 @@ def show_result():
 
 aw.execute()
 ```
-Executing this Python program (`python examples/pi.py`) on a Slurm-enabled HPC cluster will launch the following jobs.
+Executing this Python program (`python examples/pi.py`) on a Slurm HPC cluster will launch the following jobs.
 ```
            1803299       all    merge username PD       0:00      1 (Dependency)
            1803300       all show_res username PD       0:00      1 (Dependency)
