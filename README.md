@@ -3,7 +3,7 @@ Pythonic reusable acyclic workflows. Execute code on HPC systems as if you execu
 ### Motivation
 
 Tired of writing and managing Slurm submission scripts? Do you have comment out large parts of your pipeline whenever its results have been generated?
-No more! `awflow` allows you to directly prototype in Python, on your laptop. The module will take of Slurm for you!
+No more! `awflow` allows you to directly prototype in Python, on your laptop. The module will take care of Slurm for you!
 
 
 ```python
