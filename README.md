@@ -1,5 +1,9 @@
 Pythonic reusable acyclic workflows. Execute code on HPC systems as if you executed them on your laptop!
 
+### Motivation
+
+Tired of writing and managing Slurm submission scripts?
+
 **Under development!**
 
 ### Roadmap

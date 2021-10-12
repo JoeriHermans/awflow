@@ -50,6 +50,9 @@ class DirectedAcyclicWorkflowGraph:
         else:
             yield from []
 
+    def prune(self) -> None:
+        pass  # TODO Implement
+
     def _bfs(self, queue: Queue) -> Generator[Node, None]:
         if not queue.empty():
             node = queue.get()

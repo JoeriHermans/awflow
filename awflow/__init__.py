@@ -58,4 +58,5 @@ from .decorators import *
 backend = backends.autodetect()
 
 def execute(**kwargs) -> None:
+    workflow.prune()
     backend.execute(workflow=workflow, **kwargs)
