@@ -1,6 +1,7 @@
 import awflow as aw
 import glob
 import numpy as np
+import os
 
 n = 100000
 tasks = 2
@@ -22,6 +23,7 @@ def merge():
     np.save('pi.npy', stack.sum() / (n * tasks) * 4)
 
 @aw.dependency(merge)
+# @aw.postcondition(aw.exists('pi.npy'))  # Prevent execution if postcondition is satisfied.
 def show_result():
     print("Pi:", np.load('pi.npy'))
 
