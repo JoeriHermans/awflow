@@ -59,4 +59,5 @@ backend = backends.autodetect()
 
 def execute(**kwargs) -> None:
     workflow.prune()
-    backend.execute(workflow=workflow, **kwargs)
+    if len(workflow.nodes) > 0:
+        backend.execute(workflow=workflow, **kwargs)
