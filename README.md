@@ -18,7 +18,7 @@ tasks = 10
 
 @aw.cpus(4)  # Request 4 CPU cores
 @aw.memory("4GB")  # Request 4 GB of RAM
-@aw.tasks(tasks)  # Requests '100' parallel tasks
+@aw.tasks(tasks)  # Requests '10' parallel tasks
 def estimate(task_index):
     print("Executing task {} / {}.".format(task_index + 1, tasks))
     x = np.random.random(n)
