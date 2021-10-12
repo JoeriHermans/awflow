@@ -88,7 +88,7 @@ def node_task_filename(node):
 def generate_submission_script(workflow: DAWG, dir: str) -> None:
     lines = []
     lines.append('#!/usr/bin/env bash')
-    lines.append('mkdir -p logs')
+    lines.append('mkdir -p {}/logs'.format(dir))
     job_identifiers = 'echo "'
     tasks = {}
     for task_index, task in enumerate(workflow.program()):
