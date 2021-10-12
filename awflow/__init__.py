@@ -55,8 +55,7 @@ from .decorators import *
 ################################################################################
 # Set the compute backend
 ################################################################################
-#backend = backends.autodetect()
-backend = backends.slurm
+backend = backends.autodetect()
 
 def execute(**kwargs) -> None:
     backend.execute(workflow=workflow, **kwargs)
