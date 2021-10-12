@@ -3,6 +3,8 @@ import importlib
 from awflow.dawg import DirectedAcyclicWorkflowGraph as DAWG
 from awflow.node import Node
 
+from typing import List
+
 
 
 plugins = [
@@ -19,7 +21,7 @@ def apply_defaults(workflow: DAWG, **kwargs):
             applier(node, **kwargs)
 
 
-def generate_before(node: Node) -> list[str]:
+def generate_before(node: Node) -> List[str]:
     commands = []
 
     for plugin in plugins:
@@ -30,7 +32,7 @@ def generate_before(node: Node) -> list[str]:
     return commands
 
 
-def generate_after(node: Node) -> list[str]:
+def generate_after(node: Node) -> List[str]:
     commands = []
 
     for plugin in plugins:

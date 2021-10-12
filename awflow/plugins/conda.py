@@ -3,6 +3,8 @@ import os
 from awflow.dawg import DirectedAcyclicWorkflowGraph as DAWG
 from awflow.node import Node
 
+from typing import List
+
 
 
 def apply_defaults(node: Node, **kwargs) -> None:
@@ -21,12 +23,12 @@ def set_environment(node: Node, environment: str) -> None:
         node['conda'] = environment
 
 
-def generate_before(node: Node) -> list[str]:
+def generate_before(node: Node) -> List[str]:
     if 'conda' in node.attributes.keys():
         return ['eval "$(conda shell.bash hook)"', 'conda activate ' + node['conda']]
     else:
         return []
 
 
-def generate_after(node: Node) -> list[str]:
+def generate_after(node: Node) -> List[str]:
     return []
