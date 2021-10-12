@@ -18,7 +18,7 @@ tasks = 10
 
 @aw.cpus(4)  # Request 4 CPU cores
 @aw.memory("4GB")  # Request 4 GB of RAM
-@aw.postcondition(aw.num_files('pi-*.npy', 10))  # Prevent execution if all files have been generated.
+@aw.postcondition(aw.num_files('pi-*.npy', 10))
 @aw.tasks(tasks)  # Requests '10' parallel tasks
 def estimate(task_index):
     print("Executing task {} / {}.".format(task_index + 1, tasks))
