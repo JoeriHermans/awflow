@@ -34,18 +34,22 @@ class Node:
     def magic(self) -> None:
         if self.prunable:
             return
+        self._magic_postconditions()
+
+    def _magic_postconditions(self) -> None:
         # Verify if the postconditions are satisfied.
-        postconditions_satsified = True
-        for postcondition in self._postconditions:
-            if not postcondition():
-                postconditions_satsified = False
-                break
-        if postconditions_satsified:
-            def set_prunable(node):
-                node.prunable = True
-                for p in node.parents:
-                    set_prunable(p)
-            set_prunable(self)
+        if len(self._postconditions) > 0:
+            postconditions_satsified = True
+            for postcondition in self._postconditions:
+                if not postcondition():
+                    postconditions_satsified = False
+                    break
+            if postconditions_satsified:
+                def set_prunable(node):
+                    node.prunable = True
+                    for p in node.parents:
+                        set_prunable(p)
+                set_prunable(self)
 
     @property
     def attributes(self) -> dict:
