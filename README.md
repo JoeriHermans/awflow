@@ -4,8 +4,9 @@ Pythonic reusable acyclic workflows. Execute code on HPC systems as if you execu
 
 ### Roadmap
 
-- [ ] Pruning of compute graph based on postconditions (prevent re-execution).
-- [ ] `@aw.disable` decorator.
-- [ ] Enforce acyclicity of compute graph.
+- [ ] Developer requirements
 - [ ] Documentation
+- [ ] Enforce acyclicity of compute graph.
+- [ ] Pruning of compute graph based on postconditions (prevent re-execution).
 - [ ] README
+- [ ] `@aw.disable` decorator.
