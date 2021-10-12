@@ -37,4 +37,4 @@ def dependency_of_both_graphs(task_index):
     print(task_index)
 
 
-aw.execute(chdir='/home/joeri')
+aw.execute()
