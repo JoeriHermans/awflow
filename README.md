@@ -37,8 +37,7 @@ def show_result():
 
 aw.execute()
 ```
-
-Executing this Python program on a Slurm-enabled HPC cluster will produce the following jobs.
+Executing this Python program `python examples/pi.py` on a Slurm-enabled HPC cluster will produce the following jobs.
 ```
            1803299       all    merge username PD       0:00      1 (Dependency)
            1803300       all show_res username PD       0:00      1 (Dependency)
@@ -46,6 +45,12 @@ Executing this Python program on a Slurm-enabled HPC cluster will produce the fo
          1803298_3       all estimate username  R       0:01      1 compute-xx
          1803298_4       all estimate username  R       0:01      1 compute-xx
          1803298_5       all estimate username  R       0:01      1 compute-xx
+```
+
+### Installation
+
+```console
+you@local:~ $ pip install awflow
 ```
 
 ### Roadmap
