@@ -38,7 +38,7 @@ def prepare_submission(workflow: DAWG, dir: str) -> None:
 
 def add_default_attributes(workflow: DAWG) -> None:
     for node in workflow.nodes:
-        node['--export'] = 'ALL'  # Exports all environment variables to the job.
+        node['--export='] = 'ALL'  # Exports all environment variables to the job.
         node['--parsable'] = ''   # Enables convenient reading of task ID.
         node['--requeue'] = ''    # Automatically requeue when something fails.
         node['--job-name='] = node.name
@@ -105,4 +105,4 @@ def generate_submission_script(workflow: DAWG, dir: str) -> None:
 
 
 def submit(dir: str) -> None:
-    pass
+    os.system('bash ' + dir + '/pipeline')
