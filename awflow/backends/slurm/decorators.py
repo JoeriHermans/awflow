@@ -11,11 +11,11 @@ from typing import Callable
 
 
 def cpus(node: Node, n: int) -> None:
-    node['--cpus-per-task'] = str(n)
+    node['--cpus-per-task='] = str(n)
 
 
 def memory(node: Node, memory: str) -> None:
-    node['--mem'] = memory.upper()
+    node['--mem='] = memory.upper()
 
 
 def gpus(node: Node, n: int) -> None:
@@ -23,4 +23,4 @@ def gpus(node: Node, n: int) -> None:
 
 
 def timelimit(node: Node, timelimit: str) -> None:
-    node['--time'] = str(time)
+    node['--time='] = str(time)
