@@ -43,12 +43,12 @@ def add_default_attributes(workflow: DAWG, dir: str) -> None:
         node['--requeue'] = ''    # Automatically requeue when something fails.
         node['--job-name='] = '"' + node.name + '"'
         # Set the location of the logfile.
-        fmt = '"' + dir + '/logging/' + node.name
+        fmt = '"' + dir + '/logs/' + node.name
         if node.tasks > 1:
-            fmt += "-%A_%a.log"
+            fmt += '-%A_%a.log'
         else:
-            fmt += "-%j.log"
-        node['--output='] = fmt
+            fmt += '-%j.log'
+        node['--output='] = fmt + '"'
 
 
 def generate_task_files(workflow: DAWG, dir: str) -> None:
@@ -88,7 +88,7 @@ def node_task_filename(node):
 def generate_submission_script(workflow: DAWG, dir: str) -> None:
     lines = []
     lines.append('#!/usr/bin/env bash')
-    lines.append('mkdir -p logging')
+    lines.append('mkdir -p logs')
     job_identifiers = 'echo "'
     tasks = {}
     for task_index, task in enumerate(workflow.program()):
@@ -113,5 +113,7 @@ def generate_submission_script(workflow: DAWG, dir: str) -> None:
 
 
 def submit(dir: str) -> None:
-    os.system('bash ' + dir + '/pipeline')
-    print("Pipeline submitted. Logfiles are stored at `{}`".format(dir))
+    return_code = os.system('bash ' + dir + '/pipeline')
+    if return_code != 0:
+        raise Exception("Failed to submit pipeline.")
+    print("Pipeline submitted. Logfiles are stored at `{}`".format(dir + '/logs'))
