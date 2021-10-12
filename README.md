@@ -1,5 +1,7 @@
 Pythonic reusable acyclic workflows. Execute code on HPC systems as if you executed them on your personal computer!
 
+**Under development**, but it works.
+
 ### Motivation
 
 Tired of writing and managing Slurm submission scripts? Do you have comment out large parts of your pipeline whenever its results have been generated?
@@ -37,7 +39,7 @@ def show_result():
 
 aw.execute()
 ```
-Executing this Python program `python examples/pi.py` on a Slurm-enabled HPC cluster will produce the following jobs.
+Executing this Python program (`python examples/pi.py`) on a Slurm-enabled HPC cluster will launch the following jobs.
 ```
            1803299       all    merge username PD       0:00      1 (Dependency)
            1803300       all show_res username PD       0:00      1 (Dependency)
@@ -48,6 +50,8 @@ Executing this Python program `python examples/pi.py` on a Slurm-enabled HPC clu
 ```
 
 ### Installation
+
+TODO
 
 ```console
 you@local:~ $ pip install awflow
