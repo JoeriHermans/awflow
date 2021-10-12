@@ -51,6 +51,9 @@ class DirectedAcyclicWorkflowGraph:
             yield from []
 
     def prune(self) -> None:
+        # Prepare the nodes
+        for node in self.nodes:
+            node.magic()
         previous_size = 0
         current_size = len(self.nodes)
         while previous_size != current_size:

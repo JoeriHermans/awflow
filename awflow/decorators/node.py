@@ -93,3 +93,11 @@ def timelimit(f: Callable, timelimit: str) -> Callable:
     awflow.backend.timelimit(node, timelimit)
 
     return f
+
+
+@parameterized
+def postcondition(f: Callable, condition: Callable) -> Callable:
+    node = add_and_get_node(f)
+    node.add_postcondition(condition)
+
+    return f

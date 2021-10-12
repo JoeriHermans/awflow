@@ -45,5 +45,6 @@ aw.execute()
 - [ ] Documentation
 - [ ] Enforce acyclicity of compute graph
 - [ ] Logging directory
+- [ ] Postcondition utilities
 - [ ] README
 - [ ] Utility scripts to manage workflows running on Slurm.

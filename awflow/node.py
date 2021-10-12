@@ -20,8 +20,32 @@ class Node:
         self._attributes = {}
         self._children = set()
         self._parents = set()
+        self._postconditions = []
         self._prunable = False
         self._tasks = 1
+
+    @property
+    def postconditions(self) -> list[Callable]:
+        return self._postconditions
+
+    def add_postcondition(self, f: Callable) -> None:
+        self._postconditions.append(f)
+
+    def magic(self) -> None:
+        if self.prunable:
+            return
+        # Verify if the postconditions are satisfied.
+        postconditions_satsified = True
+        for postcondition in self._postconditions:
+            if not postcondition():
+                postconditions_satsified = False
+                break
+        if postconditions_satsified:
+            def set_prunable(node):
+                node.prunable = True
+                for p in node.parents:
+                    set_prunable(p)
+            set_prunable(self)
 
     @property
     def attributes(self) -> dict:
