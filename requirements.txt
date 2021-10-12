@@ -1,3 +1,2 @@
 cloudpickle
 coloredlogs
-sphinx
