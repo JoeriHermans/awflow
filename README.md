@@ -54,6 +54,5 @@ Executing this Python program on a Slurm-enabled HPC cluster will produce the fo
 - [ ] Documentation
 - [ ] Enforce acyclicity of compute graph
 - [ ] Logging directory
-- [ ] Postcondition utilities
 - [ ] README
 - [ ] Utility scripts to manage workflows running on Slurm.
