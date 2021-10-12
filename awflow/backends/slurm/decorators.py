@@ -11,16 +11,16 @@ from typing import Callable
 
 
 def cpus(node: Node, n: int) -> None:
-    raise NotImplementedError
+    node['--cpus-per-task'] = str(n)
 
 
 def memory(node: Node, memory: str) -> None:
-    raise NotImplementedError
+    node['--mem'] = memory.upper()
 
 
 def gpus(node: Node, n: int) -> None:
-    raise NotImplementedError
+    node['--gres=gpu:'] = str(n)
 
 
 def timelimit(node: Node, timelimit: str) -> None:
-    raise NotImplementedError
+    node['--time'] = str(time)

@@ -16,7 +16,7 @@ from awflow.utils.executor import generate_executables
 def execute(workflow: DAWG, dir: str = '.workflows', **kwargs) -> None:
     # Preparing the execution files.
     os.makedirs(dir, exist_ok=True)  # Create the base directory
-    directory = tempfile.mkdtemp(dir=dir)
+    directory = os.path.abspath(tempfile.mkdtemp(dir=dir))
     program = workflow.program()
     plugins.apply_defaults(workflow=workflow, **kwargs)
     # Generate the executables for the graph.
