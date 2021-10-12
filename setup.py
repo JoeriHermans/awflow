@@ -18,13 +18,11 @@ def _load_requirements(file_name="requirements.txt", comment_char='#'):
         lines = [ln.strip() for ln in file.readlines()]
     reqs = []
     for ln in lines:
-        # filer all comments
         if comment_char in ln:
             ln = ln[:ln.index(comment_char)].strip()
-        # skip directly installed dependencies
         if ln.startswith('http'):
             continue
-        if ln:  # if requirement is not empty
+        if ln:
             reqs.append(ln)
 
     return reqs
@@ -38,18 +36,21 @@ test_requirements = [
 setup(
     author='Joeri Hermans',
     author_email='joeri@peinser.com',
-    python_requires='>=3.8',
+    python_requires='>=3.7',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9'
     ],
-    description='Pythonic reusable acyclic workflows. Execute code on HPC systems as if you executed them on your laptop!',
-    extras_require={'dev': _load_requirements('requirements_dev.txt')},
+    description='Reusable acyclic workflows in Python. Execute code on HPC systems as if you executed them on your laptop!',
+    extras_require={
+        'dev': _load_requirements('requirements_dev.txt'),
+    },
     include_package_data=True,
     install_requires=_load_requirements(),
     keywords='awflow',
