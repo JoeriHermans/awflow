@@ -59,6 +59,7 @@ you@local:~ $ pip install awflow
 
 ### Roadmap
 
+- [ ] Support Python <= 3.9
 - [ ] Developer requirements
 - [ ] Documentation
 - [ ] Enforce acyclicity of compute graph
