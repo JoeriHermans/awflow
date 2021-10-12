@@ -51,7 +51,30 @@ class DirectedAcyclicWorkflowGraph:
             yield from []
 
     def prune(self) -> None:
-        pass  # TODO Implement
+        previous_size = 0
+        current_size = len(self.nodes)
+        while previous_size != current_size:
+            # Update properties before pruning
+            previous_size = current_size
+            # Prune the graph in program order.
+            nodes = list(self.nodes)  # Make a copy, as we'll modify the graph.
+            for node in nodes:
+                if node.prunable:
+                    children = list(node.children)
+                    parents = list(node.parents)
+                    # Connect all children to all parents.
+                    for parent in parents:
+                        for child in children:
+                            parent.add_child(child)
+                    # Remove node from graph
+                    for parent in parents:
+                        parent.remove_child(node)
+                    for child in children:
+                        child.remove_parent(node)
+                    del self._nodes[id(node.f)]
+                    break
+            # Update properties after pruning
+            current_size = len(self.nodes)
 
     def _bfs(self, queue: Queue) -> Generator[Node, None]:
         if not queue.empty():

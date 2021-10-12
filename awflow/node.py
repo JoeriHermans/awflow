@@ -20,6 +20,7 @@ class Node:
         self._attributes = {}
         self._children = set()
         self._parents = set()
+        self._prunable = False
         self._tasks = 1
 
     @property
@@ -52,6 +53,14 @@ class Node:
     @name.setter
     def name(self, value: str) -> None:
         self._attributes["name"] = value
+
+    @property
+    def prunable(self) -> bool:
+        return self._prunable
+
+    @prunable.setter
+    def prunable(self, prunable: bool) -> None:
+        self._prunable = prunable
 
     @property
     def parents(self) -> set[Node]:

@@ -16,6 +16,13 @@ from typing import Union
 
 
 
+def disable(f: Callable) -> Callable:
+    node = add_and_get_node(f)
+    node.prunable = True
+
+    return f
+
+
 @parameterized
 def dependency(f: Callable, dependencies: Union[list[Node], Node]) -> Callable:
     # Check if the dependency is a list of dependencies.
