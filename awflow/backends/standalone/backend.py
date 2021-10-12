@@ -1,0 +1,1 @@
+__backend__ = 'standalone'
