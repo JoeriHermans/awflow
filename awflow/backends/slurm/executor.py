@@ -3,6 +3,7 @@ Definition of the Slurm executor.
 """
 
 import os
+import re
 import tempfile
 
 from awflow import plugins
@@ -41,7 +42,7 @@ def add_default_attributes(workflow: DAWG) -> None:
         node['--export='] = 'ALL'  # Exports all environment variables to the job.
         node['--parsable'] = ''   # Enables convenient reading of task ID.
         node['--requeue'] = ''    # Automatically requeue when something fails.
-        node['--job-name='] = node.name
+        node['--job-name='] = re.escape(node.name)
 
 
 def generate_task_files(workflow: DAWG, dir: str) -> None:
