@@ -61,6 +61,5 @@ you@local:~ $ pip install awflow
 
 - [ ] Documentation
 - [ ] Enforce acyclicity of compute graph
-- [ ] Logging directory
 - [ ] README
 - [ ] Utility scripts to manage workflows running on Slurm.

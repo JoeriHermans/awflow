@@ -31,17 +31,24 @@ def execute(workflow: DAWG, dir: str = '.workflows', **kwargs) -> None:
 
 
 def prepare_submission(workflow: DAWG, dir: str) -> None:
-    add_default_attributes(workflow=workflow)
+    add_default_attributes(workflow=workflow, dir=dir)
     generate_task_files(workflow=workflow, dir=dir)
     generate_submission_script(workflow=workflow, dir=dir)
 
 
-def add_default_attributes(workflow: DAWG) -> None:
+def add_default_attributes(workflow: DAWG, dir: str) -> None:
     for node in workflow.nodes:
         node['--export='] = 'ALL'  # Exports all environment variables to the job.
         node['--parsable'] = ''   # Enables convenient reading of task ID.
         node['--requeue'] = ''    # Automatically requeue when something fails.
         node['--job-name='] = '"' + node.name + '"'
+        # Set the location of the logfile.
+        fmt = '"' + dir + '/logging/' + node.name
+        if node.tasks > 1:
+            fmt += "-%A_%a.log"
+        else:
+            fmt += "-%j.log"
+        node['--output='] = fmt
 
 
 def generate_task_files(workflow: DAWG, dir: str) -> None:
@@ -81,6 +88,7 @@ def node_task_filename(node):
 def generate_submission_script(workflow: DAWG, dir: str) -> None:
     lines = []
     lines.append('#!/usr/bin/env bash')
+    lines.append('mkdir -p logging')
     job_identifiers = 'echo "'
     tasks = {}
     for task_index, task in enumerate(workflow.program()):
@@ -106,3 +114,4 @@ def generate_submission_script(workflow: DAWG, dir: str) -> None:
 
 def submit(dir: str) -> None:
     os.system('bash ' + dir + '/pipeline')
+    print("Pipeline submitted. Logfiles are stored at `{}`".format(dir))
