@@ -39,13 +39,14 @@ test_requirements = [
 setup(
     author='Joeri Hermans',
     author_email='joeri@peinser.com',
-    python_requires='>=3.9',
+    python_requires='>=3.8',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9'
     ],
     description='Pythonic reusable acyclic workflows. Execute code on HPC systems as if you executed them on your laptop!',
