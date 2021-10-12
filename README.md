@@ -12,7 +12,7 @@ import glob
 import numpy as np
 
 n = 100000
-tasks = 100
+tasks = 10
 
 @aw.cpus(4)  # Request 4 CPU cores
 @aw.memory("4GB")  # Request 4 GB of RAM

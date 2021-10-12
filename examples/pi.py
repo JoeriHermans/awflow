@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 n = 100000
-tasks = 2
+tasks = 10
 
 @aw.cpus(4)  # Request 4 CPU cores
 @aw.memory("4GB")  # Request 4 GB of RAM
