@@ -9,12 +9,14 @@ tasks = 10
 @aw.cpus(4)  # Request 4 CPU cores
 @aw.memory("4GB")  # Request 4 GB of RAM
 @aw.tasks(tasks)  # Requests '100' parallel tasks
+@aw.postcondition(aw.num_files('pi-*.npy', 10))  # Prevent execution if all files have been generated.
 def estimate(task_index):
-    print("Executing task {} / {}.".format(task_index + 1, tasks))
-    x = np.random.random(n)
-    y = np.random.random(n)
-    pi_estimate = (x**2 + y**2 <= 1)
-    np.save('pi-' + str(task_index) + '.npy', pi_estimate)
+    if not os.path.exists('pi-{}.npy'.format(task_index)):
+        print("Executing task {} / {}.".format(task_index + 1, tasks))
+        x = np.random.random(n)
+        y = np.random.random(n)
+        pi_estimate = (x**2 + y**2 <= 1)
+        np.save('pi-' + str(task_index) + '.npy', pi_estimate)
 
 @aw.dependency(estimate)
 def merge():
