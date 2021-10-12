@@ -3,7 +3,6 @@ Definition of the Slurm executor.
 """
 
 import os
-import re
 import tempfile
 
 from awflow import plugins
@@ -42,13 +41,13 @@ def add_default_attributes(workflow: DAWG) -> None:
         node['--export='] = 'ALL'  # Exports all environment variables to the job.
         node['--parsable'] = ''   # Enables convenient reading of task ID.
         node['--requeue'] = ''    # Automatically requeue when something fails.
-        node['--job-name='] = re.escape(node.name)
+        node['--job-name='] = '"' + node.name + '"'
 
 
 def generate_task_files(workflow: DAWG, dir: str) -> None:
     for node in workflow.nodes:
         lines = []
-        lines.append('#!/usr/bin/env bash -i')
+        lines.append('#!/usr/bin/env bash')
         # Set the task attributes
         for key in node.attributes:
             if key[:2] != '--':  # Skip non-sbatch arguments
@@ -81,7 +80,7 @@ def node_task_filename(node):
 
 def generate_submission_script(workflow: DAWG, dir: str) -> None:
     lines = []
-    lines.append('#!/usr/bin/env bash -i')
+    lines.append('#!/usr/bin/env bash')
     job_identifiers = 'echo "'
     tasks = {}
     for task_index, task in enumerate(workflow.program()):
