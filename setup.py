@@ -38,7 +38,7 @@ setup(
     author_email='joeri@peinser.com',
     python_requires='>=3.7',
     classifiers=[
-        'Development Status :: 3 - Pre-Alpha',
+        'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
