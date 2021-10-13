@@ -56,6 +56,7 @@ setup(
     keywords='awflow',
     license='BSD license',
     long_description=readme,
+    long_description_content_type='text/markdown',
     name='awflow',
     packages=find_packages(include=['awflow', 'awflow.*']),
     setup_requires=setup_requirements,
