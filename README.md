@@ -52,8 +52,6 @@ Executing this Python program (`python examples/pi.py`) on a Slurm HPC cluster w
 
 ### Installation
 
-TODO
-
 ```console
 you@local:~ $ pip install awflow
 ```
