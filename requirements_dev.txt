@@ -1,3 +1,5 @@
+build
 pytest
 pytest-cov
 sphinx
+twine
