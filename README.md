@@ -1,9 +1,8 @@
 Reusable acyclic workflows in Python. Execute code on HPC systems as if you executed them on your machine!
 
-**Under development**, but it works.
-
 ## Motivation
 
+Would you like fully reproducable research or workflows that seamlessly runs on HPC clusters?
 Tired of writing and managing Slurm submission scripts? Do you have comment out large parts of your pipeline whenever its results have been generated?
 Don't waste your precious time! `awflow` allows you to directly prototype in Python, on your personal computer. The module will take care of Slurm for you!
 
@@ -67,6 +66,8 @@ If you would like to run the examples as well, be sure to install the *optional*
 you@local:~ $ pip install 'awflow[examples]'
 ```
 ## Contributing
+
+TODO
 
 ### Roadmap
 
