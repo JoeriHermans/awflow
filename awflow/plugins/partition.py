@@ -2,7 +2,6 @@ import awflow
 
 from awflow.dawg import DirectedAcyclicWorkflowGraph as DAWG
 from awflow.node import Node
-from awflow.utils.generic import is_iterable
 
 from typing import List
 
@@ -14,7 +13,7 @@ def apply_defaults(node: Node, **kwargs) -> None:
         return
     partition = kwargs.get('partition', None)
     if partition is not None:
-        if not is_iterable(partition):
+        if not isinstance(partition, list):
             partition = [partition]
         set_partitions(node, partition)
 
