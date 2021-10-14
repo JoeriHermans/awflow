@@ -5,7 +5,7 @@ Reusable acyclic workflows in Python. Execute code on HPC systems as if you exec
 ## Motivation
 
 Tired of writing and managing Slurm submission scripts? Do you have comment out large parts of your pipeline whenever its results have been generated?
-No more! `awflow` allows you to directly prototype in Python, on your personal computer. The module will take care of Slurm for you!
+Don't waste your precious time! `awflow` allows you to directly prototype in Python, on your personal computer. The module will take care of Slurm for you!
 
 
 ```python
@@ -49,6 +49,8 @@ Executing this Python program (`python examples/pi.py`) on a Slurm HPC cluster w
          1803298_4       all estimate username  R       0:01      1 compute-xx
          1803298_5       all estimate username  R       0:01      1 compute-xx
 ```
+
+Check the `[examples](examples/)` directory and `[guide](examples/guide)` to explore the functionality.
 
 ## Installation
 
