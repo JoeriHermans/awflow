@@ -53,11 +53,11 @@ Check the [examples](examples/) directory and [guide](examples/guide) to explore
 
 ## Installation
 
-The `awflow` package is available on [PyPi](https://pypi.org/project/awflow/), which means it is installable via `pip`
+The `awflow` package is available on [PyPi](https://pypi.org/project/awflow/), which means it is installable via `pip`.
 ```console
 you@local:~ $ pip install awflow
 ```
-If you would like the latest features, you can install it using this Git repository
+If you would like the latest features, you can install it using this Git repository.
 ```console
 you@local:~ $ pip install git+https://github.com/JoeriHermans/awflow
 ```
@@ -65,6 +65,19 @@ If you would like to run the examples as well, be sure to install the *optional*
 ```console
 you@local:~ $ pip install 'awflow[examples]'
 ```
+## Usage
+The core concept in `awflow` is the notion of a task.
+Essentially, this is a method that will be executed in your workflow.
+Tasks are represented as a node in a directed graph. In doing so,
+we can easily specify (task) dependencies. In addition, we can attribute
+properties to tasks using decorators defined by `awflow`. This
+allows you to specify things like CPU cores, GPU's and even postconditions.
+Follow the [guide](examples/guide) for additional examples and descriptions.
+
+### Decorators
+
+TODO
+
 ## Contributing
 
 TODO
