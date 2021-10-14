@@ -1,4 +1,4 @@
-Reusable acyclic workflows in Python. Execute code on HPC systems as if you executed them on your personal computer!
+Reusable acyclic workflows in Python. Execute code on HPC systems as if you executed them on your machine!
 
 **Under development**, but it works.
 
@@ -50,15 +50,21 @@ Executing this Python program (`python examples/pi.py`) on a Slurm HPC cluster w
          1803298_5       all estimate username  R       0:01      1 compute-xx
 ```
 
-## Decorators
-
-TODO
-
 ## Installation
 
+The `awflow` package is available on [PyPi](https://pypi.org/project/awflow/), which means it is installable via `pip`
 ```console
 you@local:~ $ pip install awflow
 ```
+If you would like the latest features, you can install it using this Git repository
+```console
+you@local:~ $ pip install git+https://github.com/JoeriHermans/awflow
+```
+If you would like to run the examples as well, be sure to install the *optional* example dependencies as well.
+```console
+you@local:~ $ pip install 'awflow[examples]'
+```
+## Contributing
 
 ### Roadmap
 
