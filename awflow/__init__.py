@@ -61,3 +61,7 @@ def execute(**kwargs) -> None:
     workflow.prune()
     if len(workflow.nodes) > 0:
         backend.execute(workflow=workflow, **kwargs)
+    workflow.clear()
+
+def clear() -> None:
+    workflow.clear()

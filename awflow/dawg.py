@@ -21,6 +21,9 @@ class DirectedAcyclicWorkflowGraph:
         super(DirectedAcyclicWorkflowGraph, self).__init__()
         self._nodes = {}
 
+    def clear(self) -> None:
+        self._nodes = {}
+
     def add(self, node: Node) -> None:
         self._nodes[node.identifier] = node
 

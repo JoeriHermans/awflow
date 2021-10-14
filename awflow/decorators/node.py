@@ -23,6 +23,12 @@ def disable(f: Callable) -> Callable:
     return f
 
 
+def node(f: Callable) -> Callable:
+    add_and_get_node(f)
+
+    return f
+
+
 @parameterized
 def dependency(f: Callable, dependencies: Union[list[Node], Node]) -> Callable:
     # Check if the dependency is a list of dependencies.
