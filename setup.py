@@ -62,7 +62,7 @@ setup(
     name='awflow',
     packages=find_packages(include=['awflow', 'awflow.*']),
     project_urls={
-        # 'Documentation': 'https://packaging.python.org/tutorials/distributing-packages/',
+        'Documentation': 'https://github.com/JoeriHermans/awflow',
         'Source': 'https://github.com/JoeriHermans/awflow',
         'Tracker': 'https://github.com/JoeriHermans/awflow/issues',
         },
@@ -70,6 +70,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/JoeriHermans/awflow',
-    version='0.0.2',
+    version='0.0.3',
     zip_safe=False,
 )
