@@ -60,7 +60,7 @@ If you would like the latest features, you can install it using this Git reposit
 ```console
 you@local:~ $ pip install git+https://github.com/JoeriHermans/awflow
 ```
-If you would like to run the examples as well, be sure to install the *optional* example dependencies as well.
+If you would like to run the examples as well, be sure to install the *optional* example dependencies.
 ```console
 you@local:~ $ pip install 'awflow[examples]'
 ```
