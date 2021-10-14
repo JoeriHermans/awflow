@@ -45,7 +45,8 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9'
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10'
     ],
     description='Reusable acyclic workflows in Python. Execute code on HPC systems as if you executed them on your laptop!',
     extras_require={
