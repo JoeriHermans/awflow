@@ -50,7 +50,7 @@ Executing this Python program (`python examples/pi.py`) on a Slurm HPC cluster w
          1803298_5       all estimate username  R       0:01      1 compute-xx
 ```
 
-Check the `[examples](examples/)` directory and `[guide](examples/guide)` to explore the functionality.
+Check the [examples](examples/) directory and [guide](examples/guide) to explore the functionality.
 
 ## Installation
 
