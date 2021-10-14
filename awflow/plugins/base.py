@@ -9,7 +9,8 @@ from typing import List
 
 plugins = [
     'awflow.plugins.chdir',
-    'awflow.plugins.conda']
+    'awflow.plugins.conda',
+    'awflow.plugins.partition']
 
 
 
