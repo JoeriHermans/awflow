@@ -23,4 +23,4 @@ def gpus(node: Node, n: int) -> None:
 
 
 def timelimit(node: Node, timelimit: str) -> None:
-    node['--time='] = str(time)
+    node['--time='] = str(timelimit)
