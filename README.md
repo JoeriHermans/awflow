@@ -76,6 +76,10 @@ Follow the [guide](examples/guide) for additional examples and descriptions.
 
 ### Decorators
 
+#### Generic
+
+#### Anaconda
+
 TODO
 
 ## Contributing
@@ -87,3 +91,7 @@ TODO
 - [ ] Documentation
 - [ ] README
 - [ ] Utility scripts to manage workflows running on Slurm.
+
+## License
+
+As described in the [`LICENSE`](LICENSE) file.

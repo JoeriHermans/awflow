@@ -2,4 +2,6 @@ build
 pytest
 pytest-cov
 sphinx
+sphinx-markdown-builder
+sphinx-autodoc-typehints
 twine
