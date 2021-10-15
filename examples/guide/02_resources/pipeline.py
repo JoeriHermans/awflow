@@ -15,10 +15,10 @@ import awflow as aw
 import os
 
 
-@aw.cpus(1)
+@aw.cpus(2)
 @aw.memory("1gb")  # Lower-case or upper-case, doesn't matter.
 def nproc1():
-    os.system('nproc')  # Returns 1
+    os.system('nproc')  # Returns 2
 
 
 @aw.cpus(4)
