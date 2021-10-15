@@ -13,6 +13,11 @@ Essentially, this is a method that will be executed in your workflow.
 Tasks represented as a node in a directed graph. In doing so,
 we can easily specify dependencies. In addition, we can attribute
 properties to tasks using Python decorators.
+
+Awflow workflows are usually generated within the calling directory
+in the hidden `.workflows` folder. When submitting the job on a
+Slurm enabled HPC system, the specific workflow directory will be outputted
+so that you could view the generated logfiles.
 """
 
 import awflow as aw
