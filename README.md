@@ -82,6 +82,10 @@ Follow the [guide](examples/guide) for additional examples and descriptions.
 
 TODO
 
+## FAQ
+
+TODO
+
 ## Contributing
 
 TODO
