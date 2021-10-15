@@ -98,4 +98,4 @@ TODO
 
 ## License
 
-As described in the [`LICENSE`](LICENSE) file.
+As described in the [`LICENSE`](LICENSE.txt) file.
