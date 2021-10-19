@@ -25,7 +25,6 @@ def execute(workflow: DAWG, dir: str = '.workflows', **kwargs) -> None:
     program = workflow.program()
     for node in program:
         return_code = execute_node(node=node, dir=directory)
-        print(return_code)
         if return_code != 0:
             exit(return_code)
 
