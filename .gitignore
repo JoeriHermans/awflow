@@ -1,5 +1,6 @@
 # awflow specific
 .workflows
+*.npy
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
