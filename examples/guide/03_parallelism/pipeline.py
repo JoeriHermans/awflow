@@ -1,5 +1,19 @@
 r"""
-In this example we'll explore the potential parallelism.
+In this example we'll explore the parallelism.
+
+In principle, there are two distinct approaches. The first
+is essentially a proxy for a Slurm task array, however, in some
+situations that might actually be inefficient for the processing
+throughput of your jobs. The reason for this is (as shown in Approach 1)
+that the `processing` task array only starts after the `generate_with_tasks`
+array completed. However, in some cases the dependency could start
+after an array task has been completed. With `awflow` you could
+do this quite easily (see Approach 2).
+
+To demonstrate, the following results with the default
+parameterization on an empty Slurm partition:
+ - Approach 1: 43.9 seconds
+ - Approach 2: 25.9 seconds
 
 Note: The time differences mentioned in this example will
 only be noticable in a Slurm environment, as the standalone
