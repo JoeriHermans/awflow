@@ -25,6 +25,7 @@ def execute(workflow: DAWG, dir: str = '.workflows', **kwargs) -> None:
     program = workflow.program()
     for node in program:
         return_code = execute_node(node=node, dir=directory)
+        print(return_code)
         if return_code != 0:
             exit(return_code)
 
@@ -42,6 +43,8 @@ def execute_node(node: Node, dir: str) -> int:
         for task_index in range(node.tasks):
             task_command = command + ' ' + str(task_index)
             return_code = os.system(task_command)
+            if return_code != 0:
+                break
     else:
         return_code = os.system(command)
 
