@@ -30,16 +30,17 @@ def node(f: Callable) -> Callable:
 
 
 @parameterized
-def dependency(f: Callable, dependencies: Union[list[Node], Node]) -> Callable:
-    # Check if the dependency is a list of dependencies.
-    if not is_iterable(dependencies):
-        dependencies = [dependencies]
-    node = add_and_get_node(f)
-    for dependency in dependencies:
-        if f == dependency:
-            raise ValueError("A function cannot depend on itself.")
-        dependency_node = add_and_get_node(dependency)
-        node.add_dependency(dependency_node)
+def dependency(f: Callable, dependencies: Union[list[Node], Node, None]) -> Callable:
+    if dependencies is not None:
+        # Check if the dependency is a list of dependencies.
+        if not is_iterable(dependencies):
+            dependencies = [dependencies]
+        node = add_and_get_node(f)
+        for dependency in dependencies:
+            if f == dependency:
+                raise ValueError("A function cannot depend on itself.")
+            dependency_node = add_and_get_node(dependency)
+            node.add_dependency(dependency_node)
 
     return f
 

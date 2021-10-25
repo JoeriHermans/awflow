@@ -82,6 +82,12 @@ Follow the [guide](examples/guide) for additional examples and descriptions.
 
 TODO
 
+## The `awflow` utility
+
+**Under development**
+
+This package comes with a utility program to manage submitted, crashed, and expired workflows. Its functionality can be inspected by executing `awflow -h`.
+
 ## FAQ
 
 TODO
