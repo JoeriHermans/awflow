@@ -9,7 +9,7 @@ import os
 from typing import List
 
 
-def generate(simulator, n, out='./data', blocks=100, cpus=1, memory='4GB', dependency=None) -> List:
+def generate(simulator, n, out='./data', blocks=100, cpus=1, memory='4GB', dependency=None, timelimit='01:00:00') -> List:
     if blocks <= 1:
         raise ValueError('Number of simulation blocks have to be larger than 1.')
 
@@ -23,8 +23,9 @@ def generate(simulator, n, out='./data', blocks=100, cpus=1, memory='4GB', depen
     @aw.dependency(dependency)
     @aw.memory(memory)
     @aw.tasks(blocks)
+    @aw.timelimit(timelimit)
     def simulate(task_index):
-         simulate(blocksize, out_blocks + '/' + str(task_index).zfill(5))
+         simulate(out_blocks + '/' + str(task_index).zfill(5), blocksize)
     dependencies.append(simulate)
 
     return dependencies
