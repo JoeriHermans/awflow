@@ -25,7 +25,9 @@ def generate(simulator, n, out='./data', blocks=100, cpus=1, memory='4GB', depen
     @aw.tasks(blocks)
     @aw.timelimit(timelimit)
     def simulate(task_index):
-         simulator(out_blocks + '/' + str(task_index).zfill(5), blocksize)
+        outputdir = out_blocks + '/' + str(task_index).zfill(5)
+        os.makedirs(outputdir, exist_ok=True)
+        simulator(outputdir, blocksize)
     dependencies.append(simulate)
 
     return dependencies
