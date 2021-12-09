@@ -72,4 +72,9 @@ setup(
     url='https://github.com/JoeriHermans/awflow',
     version='0.0.3',
     zip_safe=False,
+    entry_points = {
+        'console_scripts': [
+            'awflow = awflow.bin.cli.base:main',
+            ],
+        },
 )
