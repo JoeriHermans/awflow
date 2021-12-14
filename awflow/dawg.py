@@ -91,6 +91,12 @@ class DirectedAcyclicWorkflowGraph:
             yield from self._bfs(queue)
 
     @property
+    def postconditions(self) -> Generator:
+        for node in self._nodes.values():
+            for postcondition in node.postconditions:
+                yield postcondition
+
+    @property
     def nodes(self) -> list[Node]:
         return list(self._nodes.values())
 
