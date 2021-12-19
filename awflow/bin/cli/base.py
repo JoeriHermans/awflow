@@ -71,7 +71,7 @@ def _module_cancel(unknown_args, args):
         if not args.y:
             progress, status, backend, name = _fancy_workflow_state(workflow)
             table = Table(header_style='bold magenta', box=box.SIMPLE, expand=True)
-            table.add_column('Progress')
+            table.add_column('Postconditions')
             table.add_column('Status')
             table.add_column('Backend')
             table.add_column('Name')
@@ -117,7 +117,7 @@ def _module_list(unknown_args, args):
     workflow_directories.sort(key=os.path.getctime, reverse=True)
     console = Console()
     table = Table(header_style='bold magenta', box=box.SIMPLE, expand=True)
-    table.add_column('Progress')
+    table.add_column('Postconditions')
     table.add_column('Status')
     table.add_column('Backend')
     table.add_column('Name')
