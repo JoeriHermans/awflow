@@ -24,6 +24,7 @@ class WorkflowState:
     FAILED = 2
     IN_PROGRESS = 3
     RUNNING = 4
+    SUSPENDED = 5
 
 
 def main() -> None:
@@ -149,6 +150,8 @@ def _fancy_workflow_state(path):
         status = '[bold red]Cancelled'
     elif status == WorkflowState.COMPLETED:
         status = '[bold green]Completed'
+    elif status == WorkflowState.SUSPENDED:
+        status = '[bold orange]Suspended'
     # Fetch workflow metadata
     backend = state['backend']
     name = state['name']
@@ -190,13 +193,14 @@ def _workflow_state(path):
         for identifier in job_identifiers:
             command = 'sacct -X -n -j {id} --format=State'.format(id=identifier)
             outputs = subprocess.check_output(command, shell=True, text=True).split('\n')
-            states.extend([o.strip() for o in outputs if len(o.strip()) > 0])
+            states.extend([o.strip().split(' ')[0] for o in outputs if len(o.strip()) > 0])
         states = set(states)
-
         if 'FAILED' in states:
             status = WorkflowState.FAILED
         elif 'CANCELLED' in states:
             status = WorkflowState.CANCELLED
+        elif 'SUSPENDED' in states:
+            status = WorkflowState.SUSPENDED
         elif len(states) == 1 and 'COMPLETED' in states:
             status = WorkflowState.COMPLETED
     elif completed:
