@@ -31,6 +31,9 @@ def _module_list(unknown_args, args):
     if os.path.exists(root):
         workflow_directories = [os.path.abspath(f) for f in os.listdir(root) if os.path.isdir(f)]
     else:
+        workflow_directories = []
+    # Check if workflows are available.
+    if len(workflow_directories) == 0:
         print_error('[bold red]No workflows found![/bold red]')
         sys.exit(1)
 
