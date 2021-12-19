@@ -64,7 +64,7 @@ def _module_cancel(unknown_args, args):
     console = Console()
     for workflow in to_cancel:
         slurm_backend = os.path.exists(workflow + '/job_identifiers')
-        if slurm_backend:
+        if not slurm_backend:
             continue  # Can only cancel Slurm workflows
         # Check if we need to ask for permission.
         if not args.y:
