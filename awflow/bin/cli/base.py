@@ -91,7 +91,7 @@ def _module_list(unknown_args, args):
                 if slurm_backend:
                     with open(workflow + '/job_identifiers', 'r') as f:
                         data = f.read().split('\n')
-                        job_identifiers = [j for j in data if len(data) > 0]
+                        job_identifiers = [j for j in data if len(j) > 0]
                     states = []
                     for identifier in job_identifiers:
                         command = 'sacct -X -n -j {id} --format=State'.format(id=identifier)
