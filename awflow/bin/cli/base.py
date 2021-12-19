@@ -98,7 +98,12 @@ def _module_list(unknown_args, args):
                         outputs = subprocess.check_output(command, shell=True, text=True).split('\n')
                         states.extend([o.strip() for o in outputs if len(o.strip()) > 0])
                     states = set(states)
-                    print(states)
+                    failed = 'FAILED' in states
+                    running = 'PENDING' in states or 'RUNNING' in states
+                    if failed:
+                        status = '[bold red]Failed'
+                    elif running:
+                        status = '[blue]In progress'
             table.add_row(progress, status, backend, metadata['name'], workflow)
     console.print(table)
 
