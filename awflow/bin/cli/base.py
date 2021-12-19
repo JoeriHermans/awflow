@@ -96,12 +96,11 @@ def _module_clear(unknown_args, args):
     console = Console()
     with console.status("[blue]Clearing workflows...") as status:
         for workflow in workflow_directories:
-            with open(workflow + '/postconditions', 'rb') as f:
-                postconditions = [f() for f in pickle.loads(f.read())]
-            completed = sum(postconditions) == len(postconditions)
-            if completed:
-                _cancel_workflow(workflow)
-                shutil.rmtree(workflow)
+            state = _workflow_state(workflow)
+            if status == WorkflowState.IN_PROGRESS or status.WorkflowState.RUNNING:
+                continue
+            _cancel_workflow(workflow)
+            shutil.rmtree(workflow)
 
 
 def _module_list(unknown_args, args):
@@ -191,7 +190,7 @@ def _workflow_state(path):
             job_identifiers = [j for j in data if len(j) > 0]
         states = []
         for identifier in job_identifiers:
-            command = 'sacct -X -n -j {id} --format=State'.format(id=identifier)
+            command = 'sacct -X -n -j {id} --format=State%100'.format(id=identifier)
             outputs = subprocess.check_output(command, shell=True, text=True).split('\n')
             states.extend([o.strip().split(' ')[0] for o in outputs if len(o.strip()) > 0])
         states = set(states)
