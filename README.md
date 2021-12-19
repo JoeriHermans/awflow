@@ -92,13 +92,9 @@ you@local:~ $ awflow list
   50%                 Running     Slurm       Some name     /home/jhermans/awflow/examples/.workflows/tmpntmc712a
 ```
 
-## FAQ
-
-TODO
-
 ## Contributing
 
-TODO
+See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ### Roadmap
 
