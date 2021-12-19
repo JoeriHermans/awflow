@@ -4,6 +4,7 @@ import cloudpickle as pickle
 import json
 import os
 import rich
+import shutil
 import subprocess
 import sys
 import time
@@ -38,10 +39,16 @@ def _module_cancel(unknown_args, args):
 def _module_clear(unknown_args, args):
     root = os.path.abspath(args.pipeline + '/.workflows')
     if os.path.exists(root):
-        workflow_directories = [os.path.abspath(f) for f in os.listdir(root) if os.path.isdir(f)]
+        workflow_directories = [os.path.abspath(root + '/' + f) for f in os.listdir(root) if os.path.isdir(root + '/' + f)]
     else:
         workflow_directories = []
-    # TODO Implement
+    # Remove the workflows whose postconditions have been satisified.
+    for workflow in workflow_directories:
+        with open(workflow + '/postconditions', 'rb') as f:
+            postconditions = [f() for f in pickle.loads(f.read())]
+        completed = sum(postconditions) == len(postconditions)
+        if completed:
+            shutil.rmtree(workflow)
 
 
 def _module_list(unknown_args, args):
