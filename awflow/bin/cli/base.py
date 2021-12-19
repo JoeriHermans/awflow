@@ -48,6 +48,7 @@ def _module_clear(unknown_args, args):
             postconditions = [f() for f in pickle.loads(f.read())]
         completed = sum(postconditions) == len(postconditions)
         if completed:
+            # TODO Cancel jobs to be sure.
             shutil.rmtree(workflow)
 
 
