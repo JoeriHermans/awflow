@@ -97,7 +97,7 @@ def _module_clear(unknown_args, args):
     with console.status("[blue]Clearing workflows...") as status:
         for workflow in workflow_directories:
             state = _workflow_state(workflow)
-            if status == WorkflowState.PENDING or status.WorkflowState.RUNNING:
+            if status == WorkflowState.PENDING or status == WorkflowState.RUNNING:
                 continue
             _cancel_workflow(workflow)
             shutil.rmtree(workflow)
