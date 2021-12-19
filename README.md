@@ -1,8 +1,8 @@
-Reusable acyclic workflows in Python. Execute code on HPC systems as if you executed them on your machine!
+Reproducible research and reusable acyclic workflows in Python. Execute code on HPC systems as if you executed them on your machine!
 
 ## Motivation
 
-Would you like fully reproducable research or workflows that seamlessly run on HPC clusters?
+Would you like fully reproducible research or reusable workflows that seamlessly run on HPC clusters?
 Tired of writing and managing large Slurm submission scripts? Do you have comment out large parts of your pipeline whenever its results have been generated?
 Don't waste your precious time! `awflow` allows you to directly describe complex pipelines in Python, that run on your personal computer and large HPC clusters.
 
