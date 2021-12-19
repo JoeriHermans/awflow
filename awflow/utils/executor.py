@@ -22,3 +22,13 @@ def generate_executables(workflow: DAWG, dir: str) -> None:
         with open(executable_name(node), 'wb') as f:
             f.write(subroutine)
     os.chdir(cwd)
+
+
+def generate_postconditions(workflow: DAWG, dir: str) -> None:
+    cwd = os.getcwd()
+    os.chdir(dir)
+    postconditions = list(workflow.postconditions)
+    if len(postconditions) > 0:
+        with open('postconditions', 'wb') as f:
+            f.write(pickle.dumps(postconditions))
+    os.chdir(cwd)

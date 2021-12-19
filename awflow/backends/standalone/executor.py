@@ -10,6 +10,7 @@ from awflow.dawg import DirectedAcyclicWorkflowGraph as DAWG
 from awflow.node import Node
 from awflow.utils.executor import executable_name
 from awflow.utils.executor import generate_executables
+from awflow.utils.executor import generate_postconditions
 
 
 
@@ -19,8 +20,9 @@ def execute(workflow: DAWG, dir: str = '.workflows', **kwargs) -> None:
     directory = os.path.abspath(tempfile.mkdtemp(dir=dir))
     program = workflow.program()
     plugins.apply_defaults(workflow=workflow, **kwargs)
-    # Generate the executables for the graph.
+    # Generate the necessary files for the graph execution.
     generate_executables(workflow=workflow, dir=directory)
+    generate_postconditions(workflow=workflow, dir=directory)
     # Execute the workflow in BFS (program) order.
     program = workflow.program()
     for node in program:
