@@ -21,8 +21,7 @@ def main() -> None:
     module_handlers = {
         'cancel': _module_cancel,
         'clear': _module_clear,
-        'list': _module_list,
-        'remove': _module_remove}
+        'list': _module_list}
     if module not in module_handlers.keys():
         raise ValueError('Module `{mod}` is unknow, execute `awflow -h`.'.format(
             mod=module))
@@ -112,10 +111,6 @@ def _module_list(unknown_args, args):
                 status = '[bold green]Completed'
             table.add_row(progress, status, backend, metadata['name'], workflow)
     console.print(table)
-
-
-def _module_remove(unknown_args, args):
-    pass  # TODO Implement
 
 
 def _parse_arguments():
