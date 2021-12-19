@@ -29,4 +29,4 @@ def merge():
 def show_result():
     print("Pi:", np.load('pi.npy'))
 
-aw.execute()
+aw.execute(name=r'π example')
