@@ -38,7 +38,7 @@ def _module_list(unknown_args, args):
 def _parse_arguments():
     parser = argparse.ArgumentParser(
         prog='awflow',
-        description='Manage workflows with ease.',
+        description='Manage reproducable workflows with ease.',
         epilog='For help or bugreports please refer to ' + awflow.__github__)
     # Specify the custom arguments
     parser.add_argument('--pipeline', type=str, default='.', help='Specify directory of the pipeline (default: current directory).')
