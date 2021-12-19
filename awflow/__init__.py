@@ -8,6 +8,7 @@ those annoying submission scripts.
 
 import os
 import sys
+import time
 
 
 
@@ -64,6 +65,11 @@ from .decorators import *
 backend = backends.autodetect()
 
 def execute(**kwargs) -> None:
+    workflow.metadata['args'] = sys.argv[1:]
+    workflow.metadata['datetime'] = time.time()
+    workflow.metadata['name'] = kwargs.get('name', '')
+    workflow.metadata['pipeline'] = sys.argv[0]
+    workflow.metadata['version'] = __version__
     workflow.prune()
     if len(workflow.nodes) > 0:
         backend.execute(workflow=workflow, **kwargs)

@@ -8,6 +8,7 @@ from awflow.node import Node
 
 from typing import Any
 from typing import Callable
+from typing import Dict
 from typing import Generator
 from typing import List
 from typing import Union
@@ -20,6 +21,7 @@ class DirectedAcyclicWorkflowGraph:
     def __init__(self):
         super(DirectedAcyclicWorkflowGraph, self).__init__()
         self._nodes = {}
+        self._metadata = {}
 
     def clear(self) -> None:
         self._nodes = {}
@@ -89,6 +91,10 @@ class DirectedAcyclicWorkflowGraph:
             for child in node.children:
                 queue.put(child)
             yield from self._bfs(queue)
+
+    @property
+    def metadata(self) -> Dict:
+        return self._metadata
 
     @property
     def postconditions(self) -> Generator:

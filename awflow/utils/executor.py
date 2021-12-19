@@ -3,6 +3,7 @@ Utilities that are specific to the executors of backends.
 """
 
 import cloudpickle as pickle
+import json
 import os
 
 from awflow.dawg import DirectedAcyclicWorkflowGraph as DAWG
@@ -21,6 +22,15 @@ def generate_executables(workflow: DAWG, dir: str) -> None:
         subroutine = pickle.dumps(node.f)
         with open(executable_name(node), 'wb') as f:
             f.write(subroutine)
+    os.chdir(cwd)
+
+
+def generate_metadata(workflow: DAWG, dir: str) -> None:
+    cwd = os.getcwd()
+    os.chdir(dir)
+    data = json.dumps(workflow.metadata)
+    with open('metadata.json', 'w') as f:
+        f.write(data)
     os.chdir(cwd)
 
 

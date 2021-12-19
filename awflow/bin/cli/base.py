@@ -12,6 +12,7 @@ def main() -> None:
     module, unknown_args, args = _parse_arguments()
     module_handlers = {
         'cancel': _module_cancel,
+        'clear': _module_clear,
         'list': _module_list}
     if module not in module_handlers.keys():
         raise ValueError('Module `{mod}` is unknow, execute `awflow -h`.'.format(
@@ -24,6 +25,15 @@ def _module_cancel(unknown_args, args):
         print_error('You can only cancel workflows running on a Slurm cluster.')
         sys.exit(1)
     ## TODO Implement
+
+
+def _module_clear(unknown_args, args):
+    root = os.path.abspath(args.pipeline + '/.workflows')
+    if os.path.exists(root):
+        workflow_directories = [os.path.abspath(f) for f in os.listdir(root) if os.path.isdir(f)]
+    else:
+        workflow_directories = []
+    # TODO Implement
 
 
 def _module_list(unknown_args, args):
