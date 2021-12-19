@@ -201,6 +201,8 @@ def _workflow_state(path):
             status = WorkflowState.CANCELLED
         elif 'SUSPENDED' in states:
             status = WorkflowState.SUSPENDED
+        elif 'RUNNING' in states:
+            status = WorkflowState.RUNNING
         elif len(states) == 1 and 'COMPLETED' in states:
             status = WorkflowState.COMPLETED
     elif completed:
