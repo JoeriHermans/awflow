@@ -22,7 +22,7 @@ class WorkflowState:
     CANCELLED = 0
     COMPLETED = 1
     FAILED = 2
-    IN_PROGRESS = 3
+    PENDING = 3
     RUNNING = 4
     SUSPENDED = 5
 
@@ -97,7 +97,7 @@ def _module_clear(unknown_args, args):
     with console.status("[blue]Clearing workflows...") as status:
         for workflow in workflow_directories:
             state = _workflow_state(workflow)
-            if status == WorkflowState.IN_PROGRESS or status.WorkflowState.RUNNING:
+            if status == WorkflowState.PENDING or status.WorkflowState.RUNNING:
                 continue
             _cancel_workflow(workflow)
             shutil.rmtree(workflow)
@@ -141,8 +141,8 @@ def _fancy_workflow_state(path):
     status = state['status']
     if status == WorkflowState.RUNNING:
         status = '[blue]Running'
-    elif status == WorkflowState.IN_PROGRESS:
-        status = '[blue]In progress'
+    elif status == WorkflowState.PENDING:
+        status = '[blue]Pending'
     elif status == WorkflowState.FAILED:
         status = '[bold red]Failed'
     elif status == WorkflowState.CANCELLED:
@@ -183,7 +183,7 @@ def _workflow_state(path):
     state['progress'] = progress
 
     # Determine the status of the workflow.
-    status = WorkflowState.IN_PROGRESS
+    status = WorkflowState.PENDING
     if slurm_backend:
         with open(path + '/job_identifiers', 'r') as f:
             data = f.read().split('\n')
