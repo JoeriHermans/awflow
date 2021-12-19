@@ -95,8 +95,8 @@ def _module_list(unknown_args, args):
                     states = []
                     for identifier in job_identifiers:
                         command = 'sacct -X -n -j {id} --format=State'.format(id=identifier)
-                        outputs = subprocess.check_output(command, shell=True, text=True)
-                        states.extend([o.strip() for o in outputs])
+                        outputs = subprocess.check_output(command, shell=True, text=True).split('\n')
+                        states.extend([o.strip() for o in outputs if len(o.strip()) > 0])
                     states = set(states)
                     print(states)
             table.add_row(progress, status, backend, metadata['name'], workflow)
