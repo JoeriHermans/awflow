@@ -32,7 +32,8 @@ def _module_cancel(unknown_args, args):
     if not awflow.backends.utils.slurm_detected():
         print_error('You can only cancel workflows running on a Slurm cluster.')
         sys.exit(1)
-    ## TODO Implement
+    # TODO Implement
+    # TODO Remove workflow after it has been canceled.
 
 
 def _module_clear(unknown_args, args):
