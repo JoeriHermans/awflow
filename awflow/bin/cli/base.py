@@ -60,7 +60,7 @@ def _module_list(unknown_args, args):
         workflow_directories = []
     # Check if workflows are available.
     if len(workflow_directories) == 0:
-        print_error('[bold red]No workflows found!')
+        print_error('[bold red]No executed workflows found!')
         sys.exit(1)
     # Iterate over the workflows.
     workflow_directories.sort(key=os.path.getctime, reverse=True)
