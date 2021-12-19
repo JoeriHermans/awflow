@@ -84,26 +84,24 @@ def _module_list(unknown_args, args):
             else:
                 progress = '[blue]' + progress
             # Determine the status of the workflow.
-            if completed:
+            status = '[blue]In progress'
+            if slurm_backend:
+                with open(workflow + '/job_identifiers', 'r') as f:
+                    data = f.read().split('\n')
+                    job_identifiers = [j for j in data if len(j) > 0]
+                states = []
+                for identifier in job_identifiers:
+                    command = 'sacct -X -n -j {id} --format=State'.format(id=identifier)
+                    outputs = subprocess.check_output(command, shell=True, text=True).split('\n')
+                    states.extend([o.strip() for o in outputs if len(o.strip()) > 0])
+                states = set(states)
+                failed = 'FAILED' in states
+                if failed:
+                    status = '[bold red]Failed'
+                elif len(states) == 1 and 'COMPLETED' in states:
+                    status = '[bold green]Completed'
+            elif completed:
                 status = '[bold green]Completed'
-            else:
-                status = '[blue]In progress'
-                if slurm_backend:
-                    with open(workflow + '/job_identifiers', 'r') as f:
-                        data = f.read().split('\n')
-                        job_identifiers = [j for j in data if len(j) > 0]
-                    states = []
-                    for identifier in job_identifiers:
-                        command = 'sacct -X -n -j {id} --format=State'.format(id=identifier)
-                        outputs = subprocess.check_output(command, shell=True, text=True).split('\n')
-                        states.extend([o.strip() for o in outputs if len(o.strip()) > 0])
-                    states = set(states)
-                    failed = 'FAILED' in states
-                    running = 'PENDING' in states or 'RUNNING' in states
-                    if failed:
-                        status = '[bold red]Failed'
-                    elif running:
-                        status = '[blue]In progress'
             table.add_row(progress, status, backend, metadata['name'], workflow)
     console.print(table)
 
