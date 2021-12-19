@@ -80,7 +80,17 @@ TODO
 
 ## The `awflow` utility
 
-This package comes with a utility program to manage submitted, failed, and pending workflows. Its functionality can be inspected by executing `awflow -h`.
+This package comes with a utility program to manage submitted, failed, and pending workflows. Its functionality can be inspected by executing `awflow -h`. In addition, to streamline the management of workflows, we recommend to give every workflow as specific name to easily identify a workflow. This name does not have to be unique for every distinct workflow execution.
+```python
+aw.execute(name=r'Some name')
+```
+Executing `awflow list` after submitting the pipeline with `python pipeline.py [args]` will yield.
+```console
+you@local:~ $ awflow list
+  Postconditions      Status      Backend     Name          Location
+ ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  50%                 Running     Slurm       Some name     /home/jhermans/awflow/examples/.workflows/tmpntmc712a
+```
 
 ## FAQ
 
