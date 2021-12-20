@@ -22,6 +22,7 @@ class DirectedAcyclicWorkflowGraph:
         super(DirectedAcyclicWorkflowGraph, self).__init__()
         self._nodes = {}
         self._metadata = {}
+        self.name = ''
 
     def clear(self) -> None:
         self._nodes = {}
@@ -95,6 +96,18 @@ class DirectedAcyclicWorkflowGraph:
     @property
     def metadata(self) -> Dict:
         return self._metadata
+
+    @property
+    def name(self) -> str:
+        return self._metadata['name']
+
+    @name.setter
+    def name(self, value) -> None:
+        self._metadata['name'] = value
+
+    def has_name(self):
+        name = self.name
+        return name != None and len(name) > 0
 
     @property
     def postconditions(self) -> Generator:
