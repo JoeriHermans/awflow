@@ -32,8 +32,8 @@ def main() -> None:
     module_handlers = {
         'cancel': _module_cancel,
         'clear': _module_clear,
+        'inspect': _module_inspect,
         'list': _module_list,
-        'logs': _module_logs,
         'stats': _module_stats}
     if module not in module_handlers.keys():
         raise ValueError('Module `{mod}` is unknow, execute `awflow -h`.'.format(
@@ -119,11 +119,18 @@ def _module_list(unknown_args, args):
     console.print(table)
 
 
-def _module_logs(unknown_args, args):
-    if not awflow.backends.utils.slurm_detected():
-       print_error('You can only check logs on a Slurm cluster.')
-       sys.exit(1)
-    raise NotImplementedError
+def _module_inspect(unknown_args, args):
+    if len(unknown_args) == 0:
+        print_error('No workflow specified.')
+        sys.exit(1)
+    root = os.path.abspath(args.pipeline)
+    query = unknown_args[0]
+    workflows = _search_workflows(root, query)
+    if len(workflows) == 0:
+        print_error('No workflow found.')
+        sys.exit(1)
+    workflow = workflows[0]
+    os.chdir(workflow)
 
 
 def _module_stats(unknown_args, args):

@@ -110,7 +110,7 @@ TODO
 TODO
 
 
-> ```you@local:~ $ awflow logs [workflow]```
+> ```you@local:~ $ awflow inspect [workflow]```
 TODO
 
 ## Contributing
