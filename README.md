@@ -102,7 +102,7 @@ you@local:~ $ awflow list
 TODO
 
 
-> ```you@local:~ $ awflow clear [optional: workflow]```
+> ```you@local:~ $ awflow clear```
 TODO
 
 

@@ -78,14 +78,10 @@ def _module_cancel(unknown_args, args):
 
 def _module_clear(unknown_args, args):
     root = os.path.abspath(args.pipeline)
-    if len(unknown_args) > 0:
-        query = unknown_args[0]
-        workflow_directories = _search_workflows(root, query)
+    if os.path.exists(root):
+        workflow_directories = [os.path.abspath(root + '/' + f) for f in os.listdir(root) if os.path.isdir(root + '/' + f)]
     else:
-        if os.path.exists(root):
-            workflow_directories = [os.path.abspath(root + '/' + f) for f in os.listdir(root) if os.path.isdir(root + '/' + f)]
-        else:
-            workflow_directories = []
+        workflow_directories = []
     # Remove the workflows whose postconditions have been satisified.
     console = Console()
     with console.status("[blue]Clearing workflows...") as status:
