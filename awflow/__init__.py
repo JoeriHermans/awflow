@@ -65,6 +65,7 @@ from .decorators import *
 backend = backends.autodetect()
 
 def execute(**kwargs) -> None:
+    # Prepare the workflow
     workflow.metadata['args'] = sys.argv[1:]
     workflow.metadata['datetime'] = time.time()
     workflow.metadata['pipeline'] = sys.argv[0]
@@ -72,7 +73,8 @@ def execute(**kwargs) -> None:
     workflow.name = kwargs.get('name', '')
     workflow.prune()
     if len(workflow.nodes) > 0:
-        backend.execute(workflow=workflow, **kwargs)
+        workflow_dir = os.environ.get('AWFLOW_STORAGE', '.workflows')
+        backend.execute(workflow=workflow, dir=workflow_dir, **kwargs)
     workflow.clear()
 
 def clear() -> None:

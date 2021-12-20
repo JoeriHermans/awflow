@@ -48,7 +48,7 @@ def _module_cancel(unknown_args, args):
         sys.exit(0)
     query = unknown_args[0]
     to_cancel = []
-    root = os.path.abspath(args.pipeline + '/.workflows')
+    root = os.path.abspath(args.pipeline)
     to_cancel = glob.glob(root + '/*' + query + '*')
     if os.path.exists(root):
         workflow_directories = [os.path.abspath(root + '/' + f) for f in os.listdir(root) if os.path.isdir(root + '/' + f)]
@@ -87,7 +87,7 @@ def _module_cancel(unknown_args, args):
 
 
 def _module_clear(unknown_args, args):
-    root = os.path.abspath(args.pipeline + '/.workflows')
+    root = os.path.abspath(args.pipeline)
     if os.path.exists(root):
         workflow_directories = [os.path.abspath(root + '/' + f) for f in os.listdir(root) if os.path.isdir(root + '/' + f)]
     else:
@@ -104,7 +104,7 @@ def _module_clear(unknown_args, args):
 
 
 def _module_list(unknown_args, args):
-    root = os.path.abspath(args.pipeline + '/.workflows')
+    root = os.path.abspath(args.pipeline)
     if os.path.exists(root):
         workflow_directories = [os.path.abspath(root + '/' + f) for f in os.listdir(root) if os.path.isdir(root + '/' + f)]
     else:
@@ -233,7 +233,7 @@ def _parse_arguments():
         description='Manage reproducable workflows with ease.',
         epilog='For help or bugreports please refer to ' + awflow.__github__)
     # Specify the custom arguments
-    parser.add_argument('--pipeline', type=str, default='.', help='Specify directory of the pipeline (default: current directory).')
+    parser.add_argument('--pipeline', type=str, default=os.environ.get('AWFLOW_STORAGE', './workflows'), help='Specify directory of the pipeline (default: current directory).')
     parser.add_argument('-y', action='store_true', help='Perform the action without asking for permission (default: false).')
 
     # Verify
