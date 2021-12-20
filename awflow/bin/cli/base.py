@@ -32,7 +32,9 @@ def main() -> None:
     module_handlers = {
         'cancel': _module_cancel,
         'clear': _module_clear,
-        'list': _module_list}
+        'list': _module_list,
+        'logs': _module_logs,
+        'stats': _module_stats}
     if module not in module_handlers.keys():
         raise ValueError('Module `{mod}` is unknow, execute `awflow -h`.'.format(
             mod=module))
@@ -127,6 +129,14 @@ def _module_list(unknown_args, args):
             progress, status, backend, name = _fancy_workflow_state(workflow)
             table.add_row(progress, status, backend, name, workflow)
     console.print(table)
+
+
+def _module_logs(unknown_args, args):
+    raise NotImplementedError
+
+
+def _module_stats(unknown_args, args):
+    raise NotImplementedError
 
 
 def _fancy_workflow_state(path):

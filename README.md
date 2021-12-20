@@ -78,6 +78,10 @@ Follow the [guide](examples/guide) for additional examples and descriptions.
 
 TODO
 
+### Workflow storage
+By default, workflows will be stored in the current working direction within the `./workflows` folder. If desired, a central
+storage directory can be used by specifying the `AWFLOW_STORAGE` environment variable.
+
 ## The `awflow` utility
 
 This package comes with a utility program to manage submitted, failed, and pending workflows. Its functionality can be inspected by executing `awflow -h`. In addition, to streamline the management of workflows, we recommend to give every workflow as specific name to easily identify a workflow. This name does not have to be unique for every distinct workflow execution.
