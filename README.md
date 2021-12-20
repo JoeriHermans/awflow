@@ -102,7 +102,7 @@ you@local:~ $ awflow list
 TODO
 
 
-> ```you@local:~ $ awflow clear```
+> ```you@local:~ $ awflow clear [optional: workflow]```
 TODO
 
 
@@ -110,11 +110,7 @@ TODO
 TODO
 
 
-> ```you@local:~ $ awflow logs [workflow] [method]```
-TODO
-
-
-> ```you@local:~ $ awflow stats [workflow] [optional: method]```
+> ```you@local:~ $ awflow logs [workflow]```
 TODO
 
 ## Contributing

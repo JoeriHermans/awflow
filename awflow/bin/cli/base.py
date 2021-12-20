@@ -48,21 +48,9 @@ def _module_cancel(unknown_args, args):
     if len(unknown_args) == 0:
         print_error('Specify the name or location of the workflow to be cancelled.')
         sys.exit(0)
-    query = unknown_args[0]
-    to_cancel = []
     root = os.path.abspath(args.pipeline)
-    to_cancel = glob.glob(root + '/*' + query + '*')
-    if os.path.exists(root):
-        workflow_directories = [os.path.abspath(root + '/' + f) for f in os.listdir(root) if os.path.isdir(root + '/' + f)]
-    else:
-        workflow_directories = []
-    # Check whether a workflow name matches.
-    m = re.compile('(.' + query + ')')
-    for workflow in workflow_directories:
-        with open(workflow + '/metadata.json') as f:
-            name = json.loads(f.read())['name']
-        if m.search(name):
-            to_cancel.append(workflow)
+    query = unknown_args[0]
+    to_cancel = _search_workflows(root, query)
     # Iterate through the to-cancel workflows:
     console = Console()
     for workflow in to_cancel:
@@ -90,10 +78,14 @@ def _module_cancel(unknown_args, args):
 
 def _module_clear(unknown_args, args):
     root = os.path.abspath(args.pipeline)
-    if os.path.exists(root):
-        workflow_directories = [os.path.abspath(root + '/' + f) for f in os.listdir(root) if os.path.isdir(root + '/' + f)]
+    if len(unknown_args) > 0:
+        query = unknown_args[0]
+        workflow_directories = _search_workflows(root, query)
     else:
-        workflow_directories = []
+        if os.path.exists(root):
+            workflow_directories = [os.path.abspath(root + '/' + f) for f in os.listdir(root) if os.path.isdir(root + '/' + f)]
+        else:
+            workflow_directories = []
     # Remove the workflows whose postconditions have been satisified.
     console = Console()
     with console.status("[blue]Clearing workflows...") as status:
@@ -132,6 +124,9 @@ def _module_list(unknown_args, args):
 
 
 def _module_logs(unknown_args, args):
+    if not awflow.backends.utils.slurm_detected():
+       print_error('You can only check logs on a Slurm cluster.')
+       sys.exit(1)
     raise NotImplementedError
 
 
@@ -235,6 +230,24 @@ def _cancel_workflow(path):
         success = False
 
     return success
+
+
+def _search_workflows(root, query):
+    workflows = glob.glob(root + '/*' + query + '*')
+    if os.path.exists(root):
+        workflows.extend([os.path.abspath(root + '/' + f) for f in os.listdir(root) if os.path.isdir(root + '/' + f)])
+    else:
+        workflow_directories = []
+    # Check whether a workflow name matches.
+    m = re.compile('(.' + query + ')')
+    for workflow in workflow_directories:
+        with open(workflow + '/metadata.json') as f:
+            name = json.loads(f.read())['name']
+        if m.search(name):
+            workflows.append(workflow)
+    workflows.sort(key=os.path.getctime, reverse=True)
+
+    return workflows
 
 
 def _parse_arguments():
