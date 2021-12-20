@@ -96,6 +96,27 @@ you@local:~ $ awflow list
   50%                 Running     Slurm       Some name     /home/jhermans/awflow/examples/.workflows/tmpntmc712a
 ```
 
+### Modules
+
+> ```you@local:~ $ awflow cancel [workflow]```
+TODO
+
+
+> ```you@local:~ $ awflow clear```
+TODO
+
+
+> ```you@local:~ $ awflow list```
+TODO
+
+
+> ```you@local:~ $ awflow logs [workflow] [method]```
+TODO
+
+
+> ```you@local:~ $ awflow stats [workflow] [optional: method]```
+TODO
+
 ## Contributing
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md).
