@@ -183,8 +183,7 @@ def _workflow_state(path):
     # Load the workflows postconditions
     cwd = os.getcwd()
     with open(path + '/postconditions', 'rb') as f:
-        pipeline_path = metadata['pipeline']
-        os.chdir(os.path.dirname(pipeline_path))
+        os.chdir(os.path.dirname(metadata['pipeline']))
         postconditions = [f() for f in pickle.loads(f.read())]
         os.chdir(cwd)
         completed = sum(postconditions) == len(postconditions)
@@ -263,7 +262,7 @@ def _parse_arguments():
         description='Manage reproducable workflows with ease.',
         epilog='For help or bugreports please refer to ' + awflow.__github__)
     # Specify the custom arguments
-    parser.add_argument('--pipeline', type=str, default=os.environ.get('AWFLOW_STORAGE', './workflows'), help='Specify directory of the pipeline (default: current directory).')
+    parser.add_argument('--pipeline', type=str, default=os.environ.get('AWFLOW_STORAGE', '.workflows'), help='Specify directory of the pipeline (default: current directory).')
     parser.add_argument('-y', action='store_true', help='Perform the action without asking for permission (default: false).')
 
     # Verify
