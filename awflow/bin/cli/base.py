@@ -184,7 +184,7 @@ def _workflow_state(path):
     cwd = os.getcwd()
     with open(path + '/postconditions', 'rb') as f:
         pipeline_path = metadata['pipeline']
-        os.chdir(pipeline_path)
+        os.chdir(os.path.dirname(pipeline_path))
         postconditions = [f() for f in pickle.loads(f.read())]
         os.chdir(cwd)
         completed = sum(postconditions) == len(postconditions)
