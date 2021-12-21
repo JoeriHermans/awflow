@@ -68,7 +68,7 @@ def execute(**kwargs) -> None:
     # Prepare the workflow
     workflow.metadata['args'] = sys.argv[1:]
     workflow.metadata['datetime'] = time.time()
-    workflow.metadata['pipeline'] = sys.argv[0]
+    workflow.metadata['pipeline'] = os.path.abspath(sys.argv[0])
     workflow.metadata['version'] = __version__
     workflow.name = kwargs.get('name', '')
     workflow.prune()

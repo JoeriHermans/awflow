@@ -181,8 +181,12 @@ def _workflow_state(path):
     with open(path + '/metadata.json', 'r') as f:
         metadata = json.loads(f.read())
     # Load the workflows postconditions
+    cwd = os.getcwd()
     with open(path + '/postconditions', 'rb') as f:
+        pipeline_path = metadata['pipeline']
+        os.chdir(pipeline_path)
         postconditions = [f() for f in pickle.loads(f.read())]
+        os.chdir(cwd)
         completed = sum(postconditions) == len(postconditions)
         progress = str(int(sum(postconditions) / len(postconditions) * 100)) + '%'
     state['completed'] = completed
