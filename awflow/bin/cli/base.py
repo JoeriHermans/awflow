@@ -243,7 +243,8 @@ def _search_workflows(root, query):
     if os.path.exists(root):
         workflows.extend([os.path.abspath(root + '/' + f) for f in os.listdir(root) if os.path.isdir(root + '/' + f)])
     else:
-        workflow_directories = []
+        storage = os.path.abspath(args.pipeline)
+        workflow_directories = [os.path.abspath(storage + '/' + f) for f in os.listdir(root) if os.path.isdir(root + '/' + f)]
     # Check whether a workflow name matches.
     m = re.compile('(.' + query + ')')
     for workflow in workflow_directories:
