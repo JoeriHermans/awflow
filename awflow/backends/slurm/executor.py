@@ -12,28 +12,23 @@ from awflow.utils.executor import executable_name
 from awflow.utils.executor import generate_executables
 from awflow.utils.executor import generate_metadata
 from awflow.utils.executor import generate_postconditions
-from rich.console import Console
 
 
 
 def execute(workflow: DAWG, dir: str = '.workflows', **kwargs) -> None:
-    console = Console()
     # Preparing the execution files.
     os.makedirs(dir, exist_ok=True)  # Create the base directory
     directory = os.path.abspath(tempfile.mkdtemp(dir=dir))
     program = workflow.program()
     plugins.apply_defaults(workflow=workflow, **kwargs)
     # Generate the necessary files for the graph execution.
-    with console.status("[blue]Preparing compute graph") as status:
-        generate_executables(workflow=workflow, dir=directory)
-    with console.status("[blue]Generating metadata") as status:
-        generate_metadata(workflow=workflow, dir=directory)
-        generate_postconditions(workflow=workflow, dir=directory)
+    generate_executables(workflow=workflow, dir=directory)
+    generate_metadata(workflow=workflow, dir=directory)
+    generate_postconditions(workflow=workflow, dir=directory)
+    # Prepare the Slurm submission.
+    prepare_submission(workflow=workflow, dir=directory)
     try:
-        with console.status("[blue]Submitting compute graph to Slurm") as status:
-            # Prepare the Slurm submission.
-            prepare_submission(workflow=workflow, dir=directory)
-            submit(dir=directory)  # Submit to Slurm
+        submit(dir=directory)  # Submit to Slurm
     except Exception as e:
         print(e)
         os.rmdir(directory)  # Remove the generated files.
