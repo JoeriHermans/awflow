@@ -72,7 +72,7 @@ def generate_task_files(workflow: DAWG, dir: str) -> None:
             line = '#SBATCH ' + key + value
             lines.append(line)
         # Check if the task is an array task.
-        if node.tasks >= 1:
+        if node.tasks > 1:
             lines.append('#SBATCH --array 0-' + str(node.tasks - 1))
             command_suffix = ' $SLURM_ARRAY_TASK_ID'
         else:

@@ -46,7 +46,7 @@ def execute_node(node: Node, dir: str) -> int:
     commands.extend(plugins.generate_after(node=node))
     # Generate the command string
     command = ' && '.join(commands)
-    if node.tasks >= 1:
+    if node.tasks > 1:
         for task_index in range(node.tasks):
             task_command = command + ' ' + str(task_index)
             return_code = os.system(task_command)
