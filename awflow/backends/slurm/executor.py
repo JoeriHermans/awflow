@@ -21,10 +21,12 @@ def execute(workflow: DAWG, dir: str = '.workflows', **kwargs) -> None:
     directory = os.path.abspath(tempfile.mkdtemp(dir=dir))
     program = workflow.program()
     plugins.apply_defaults(workflow=workflow, **kwargs)
+    # Postconditions have to be generated before workflow pruning
+    generate_postconditions(workflow=workflow, dir=directory)
+    workflow.prune()
     # Generate the necessary files for the graph execution.
     generate_executables(workflow=workflow, dir=directory)
     generate_metadata(workflow=workflow, dir=directory)
-    generate_postconditions(workflow=workflow, dir=directory)
     # Prepare the Slurm submission.
     prepare_submission(workflow=workflow, dir=directory)
     try:
