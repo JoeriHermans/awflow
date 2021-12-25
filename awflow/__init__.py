@@ -71,9 +71,8 @@ def execute(**kwargs) -> None:
     workflow.metadata['pipeline'] = os.path.abspath(sys.argv[0])
     workflow.metadata['version'] = __version__
     workflow.name = kwargs.get('name', '')
-    if len(workflow.nodes) > 0:
-        workflow_dir = os.environ.get('AWFLOW_STORAGE', '.workflows')
-        backend.execute(workflow=workflow, dir=workflow_dir, **kwargs)
+    workflow_dir = os.environ.get('AWFLOW_STORAGE', '.workflows')
+    backend.execute(workflow=workflow, dir=workflow_dir, **kwargs)
     workflow.clear()
 
 def clear() -> None:

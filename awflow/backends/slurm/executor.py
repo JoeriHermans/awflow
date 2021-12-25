@@ -3,6 +3,7 @@ Definition of the Slurm executor.
 """
 
 import os
+import shutil
 import tempfile
 
 from awflow import plugins
@@ -24,16 +25,21 @@ def execute(workflow: DAWG, dir: str = '.workflows', **kwargs) -> None:
     # Postconditions have to be generated before workflow pruning
     generate_postconditions(workflow=workflow, dir=directory)
     workflow.prune()
-    # Generate the necessary files for the graph execution.
-    generate_executables(workflow=workflow, dir=directory)
-    generate_metadata(workflow=workflow, dir=directory)
-    # Prepare the Slurm submission.
-    prepare_submission(workflow=workflow, dir=directory)
-    try:
-        submit(dir=directory)  # Submit to Slurm
-    except Exception as e:
-        print(e)
-        os.rmdir(directory)  # Remove the generated files.
+    # Check if all postconditions have been statisfied
+    if len(workflow.nodes) > 0:
+        # Generate the necessary files for the graph execution.
+        generate_executables(workflow=workflow, dir=directory)
+        generate_metadata(workflow=workflow, dir=directory)
+        # Prepare the Slurm submission.
+        prepare_submission(workflow=workflow, dir=directory)
+        try:
+            submit(dir=directory)  # Submit to Slurm
+        except Exception as e:
+            print(e)
+            shutil.rmtree(directory)  # Remove the generated files.
+    else:
+        # Remove the generated directory
+        shutil.rmtree(directory)
 
 
 def prepare_submission(workflow: DAWG, dir: str) -> None:

@@ -3,6 +3,7 @@ Definition of the standalone executor.
 """
 
 import os
+import shutil
 import tempfile
 
 from awflow import plugins
@@ -24,15 +25,20 @@ def execute(workflow: DAWG, dir: str = '.workflows', **kwargs) -> None:
     # Postconditions have to be generated before workflow pruning
     generate_postconditions(workflow=workflow, dir=directory)
     workflow.prune()
-    # Generate the necessary files for the graph execution.
-    generate_executables(workflow=workflow, dir=directory)
-    generate_metadata(workflow=workflow, dir=directory)
-    # Execute the workflow in BFS (program) order.
-    program = workflow.program()
-    for node in program:
-        return_code = execute_node(node=node, dir=directory)
-        if return_code != 0:
-            exit(return_code)
+    # Check if all postconditions have been statisfied
+    if len(workflow.nodes) > 0:
+        # Generate the necessary files for the graph execution.
+        generate_executables(workflow=workflow, dir=directory)
+        generate_metadata(workflow=workflow, dir=directory)
+        # Execute the workflow in BFS (program) order.
+        program = workflow.program()
+        for node in program:
+            return_code = execute_node(node=node, dir=directory)
+            if return_code != 0:
+                shutil.rmtree(directory)
+                exit(return_code)
+    else:
+        shutil.rmtree(directory)
 
 
 def execute_node(node: Node, dir: str) -> int:
