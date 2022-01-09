@@ -7,8 +7,6 @@ those annoying submission scripts.
 """
 
 import os
-import sys
-import time
 
 
 
@@ -20,60 +18,7 @@ if sys.version_info < (3,):
 
 
 ################################################################################
-# Increase recursion depth (to handle large workflow graph pruning)
-################################################################################
-sys.setrecursionlimit(10000)
-
-
-################################################################################
 # Global specifications
 ################################################################################
 from .spec import __version__
 from .spec import __github__
-
-
-################################################################################
-# Autoload imports
-################################################################################
-from . import utils
-from . import backends
-
-
-################################################################################
-# Default computational graph definition
-################################################################################
-from awflow.dawg import DirectedAcyclicWorkflowGraph as DAWG
-
-workflow = DAWG()  # Too bad there is a PyPi package called `dawg`.
-
-
-################################################################################
-# Load the plugins module
-################################################################################
-from . import plugins
-
-
-################################################################################
-# Load the function decorators
-################################################################################
-from .decorators import *
-
-
-################################################################################
-# Set the compute backend
-################################################################################
-backend = backends.autodetect()
-
-def execute(**kwargs) -> None:
-    # Prepare the workflow
-    workflow.metadata['args'] = sys.argv[1:]
-    workflow.metadata['datetime'] = time.time()
-    workflow.metadata['pipeline'] = os.path.abspath(sys.argv[0])
-    workflow.metadata['version'] = __version__
-    workflow.name = kwargs.get('name', '')
-    workflow_dir = os.environ.get('AWFLOW_STORAGE', '.workflows')
-    backend.execute(workflow=workflow, dir=workflow_dir, **kwargs)
-    workflow.clear()
-
-def clear() -> None:
-    workflow.clear()

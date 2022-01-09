@@ -34,7 +34,7 @@ test_requirements = [
     'pytest>=3']
 
 setup(
-    author='Joeri Hermans',
+    author='Joeri Hermans, François Rozet, Arnaud Delaunoy',
     author_email='joeri@peinser.com',
     python_requires='>=3.7',
     classifiers=[
@@ -70,7 +70,7 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/JoeriHermans/awflow',
-    version='0.0.4',
+    version='0.0.5',
     zip_safe=False,
     entry_points = {
         'console_scripts': [
