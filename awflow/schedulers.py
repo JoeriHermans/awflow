@@ -234,6 +234,7 @@ async def to_thread(func: Callable, /, *args, **kwargs) -> Any:
 
 
 def schedule(*jobs, backend: str = None, **kwargs) -> List[Any]:
+    jobs = filter(lambda job: not job.done, jobs)
     scheduler = {
         'local': LocalScheduler,
         'slurm': SlurmScheduler,

@@ -48,7 +48,11 @@ Executing this Python program (`python examples/pi.py --slurm`) on a Slurm HPC c
          1803298_5       all estimate username  R       0:01      1 compute-xx
 ```
 
-Check the [examples](examples/) directory and [guide](examples/guide) to explore the functionality.
+Check the [examples](examples/) directory to explore the functionality.
+
+## Usage
+
+TODO
 
 ## Installation
 
@@ -64,10 +68,6 @@ If you would like to run the examples as well, be sure to install the *optional*
 ```console
 you@local:~ $ pip install 'awflow[examples]'
 ```
-
-## Usage
-
-TODO
 
 ## Contributing
 
