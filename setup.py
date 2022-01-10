@@ -55,7 +55,7 @@ setup(
     },
     include_package_data=True,
     install_requires=_load_requirements(),
-    keywords='awflow workflow workflow-engine hpc slurm hpc-tools',
+    keywords='awflow workflow workflow-engine hpc slurm hpc-tools reproducible-science',
     license='BSD license',
     long_description=readme,
     long_description_content_type='text/markdown',
