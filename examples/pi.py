@@ -5,7 +5,7 @@ import sys
 import numpy as np
 import os
 
-from awflow import after, ensure, job, schedule
+from awflow import after, ensure, job, schedule, terminal_nodes
 
 
 
@@ -49,10 +49,14 @@ def merge():
     print('π ≅', pi_estimate)
     np.save('pi.npy', pi_estimate)
 
-# Prune jobs whose postconditions have been satisified
-merge.prune()
+r"""Find the terminal nodes of the specified root node (estimate)
+and prune the jobs from the workflow whose postconditions
+have been satisfied.
+"""
+leafs = terminal_nodes(estimate, prune=True)
+print(leafs)  # prints merge_and_show
 
 # Schedule the jobs for execution
-schedule(merge, backend=arguments.backend, partition=arguments.partition)
+schedule(*leafs, backend=arguments.backend, partition=arguments.partition)
 if arguments.backend == 'slurm':
     print("Jobs have been submitted!")

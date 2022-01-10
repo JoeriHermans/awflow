@@ -76,4 +76,10 @@ def disable(job: Job = None) -> Callable:
 ################################################################################
 # Backend utilities
 ################################################################################
-from .schedulers import available_backends
+from .schedulers import available_backends  # Yields the available backends
+
+
+################################################################################
+# Workflow utilities
+################################################################################
+from .workflow import terminal_nodes  # Yields the terminal nodes of a set of roots

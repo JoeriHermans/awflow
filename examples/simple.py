@@ -1,6 +1,7 @@
+import awflow
 import time
 
-from awflow import job, after, waitfor, disable, ensure, schedule
+from awflow import job, after, waitfor, disable, ensure, schedule, terminal_nodes
 
 
 @job
@@ -14,6 +15,7 @@ def check_something():
     return True
 
 @ensure(check_something)
+@disable
 @job
 def b():
     time.sleep(1)
@@ -39,6 +41,12 @@ def d():
     time.sleep(1)
     print('d')
 
-d.prune()  # Prune jobs whose postconditions have been satisfied.
+@after(c)
+@job
+def e():
+    print('e')
 
-schedule(d, backend='local')  # prints b b c42 d d
+leafs = terminal_nodes(a, prune=True)  # Search for terminal nodes of `a` and prune automatically
+print(leafs)  # prints {d, e}
+
+schedule(*leafs, backend='local')  # prints a a c42 d e d (e is executed concurrently by asyncio)

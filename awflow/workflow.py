@@ -179,3 +179,26 @@ class Job(Node):
             }
             if len(pending) < len(self.array):
                 self.array = pending
+
+
+def terminal_nodes(*roots, prune: bool = False) -> Set[Node]:
+    def search(job: Job) -> Set[Node]:
+        if len(job.children) == 0:
+            leafs = {job}
+        else:
+            leafs = set()
+            for child in job.children:
+                leafs.update(search(child))
+
+        return leafs
+
+    leafs = set()
+
+    for root in roots:
+        leafs.update(search(root))
+
+    if prune:
+        for leaf in leafs:
+            leaf.prune()
+
+    return leafs

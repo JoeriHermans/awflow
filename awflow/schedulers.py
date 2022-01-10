@@ -234,7 +234,7 @@ async def to_thread(func: Callable, /, *args, **kwargs) -> Any:
 def schedule(*jobs, backend: str, **kwargs) -> List[Any]:
     assert backend in available_backends()
 
-    jobs = filter(lambda job: not job.done, jobs)  # Filter terminal nodes whose postconditions have been satisfied.
+    jobs = filter(lambda job: not job.done and not job.disabled, jobs)  # Filter terminal nodes whose postconditions have been satisfied.
     scheduler = {
         'local': LocalScheduler,
         'slurm': SlurmScheduler,
