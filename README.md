@@ -8,38 +8,37 @@ Don't waste your precious time! `awflow` allows you to directly describe complex
 
 
 ```python
-import awflow as aw
-import glob
 import numpy as np
+import os
 
-n = 100000
+from awflow import after, ensure, job, schedule
+
+n = 10000
 tasks = 10
 
-@aw.cpus(4)  # Request 4 CPU cores
-@aw.memory("4GB")  # Request 4 GB of RAM
-@aw.postcondition(aw.num_files('pi-*.npy', 10))
-@aw.tasks(tasks)  # Requests '10' parallel tasks
-def estimate(task_index):
-    print("Executing task {} / {}.".format(task_index + 1, tasks))
+@ensure(lambda i: os.path.exists(f'pi-{i}.npy'))
+@job(cpus='4', memory='4GB', array=tasks)
+def estimate(i):
+    print(f'Executing task {i + 1} / {tasks}.')
     x = np.random.random(n)
     y = np.random.random(n)
     pi_estimate = (x**2 + y**2 <= 1)
-    np.save('pi-' + str(task_index) + '.npy', pi_estimate)
+    np.save(f'pi-{i}.npy', pi_estimate)
 
-@aw.dependency(estimate)
+@after(estimate)
+@job(cpus='4')
 def merge():
     files = glob.glob('pi-*.npy')
     stack = np.vstack([np.load(f) for f in files])
-    np.save('pi.npy', stack.sum() / (n * tasks) * 4)
+    pi_estimate = stack.sum() / (n * tasks) * 4
+    np.save('pi.npy', pi_estimate)
+    print(pi_estimate)
 
-@aw.dependency(merge)
-@aw.postcondition(aw.exists('pi.npy'))  # Prevent execution if postcondition is satisfied.
-def show_result():
-    print("Pi:", np.load('pi.npy'))
+merge.prune()  # Prune dependencies whose postconditions have already been satisfied.
 
-aw.execute()
+schedule(merge, backend='local')  # Uses the local compute backend
 ```
-Executing this Python program (`python examples/pi.py`) on a Slurm HPC cluster will launch the following jobs.
+Executing this Python program (`python examples/pi.py --slurm`) on a Slurm HPC cluster will launch the following jobs.
 ```
            1803299       all    merge username PD       0:00      1 (Dependency)
            1803300       all show_res username PD       0:00      1 (Dependency)
