@@ -59,12 +59,7 @@ class Job(Node):
         super().__init__(fn.__name__ if name is None else name)
         # Prepare job properties and their defaults
         self._fn = fn
-        self.settings = {
-            'cpus': 1,
-            'gpus': 0,
-            'memory': '2GB',
-            'timelimit': '1-00:00:00',
-        }
+        self.settings = {}
         self.settings.update(kwargs)
         if type(array) is int:
             array = range(array)
