@@ -121,6 +121,7 @@ class SlurmScheduler(BaseScheduler):
         path.mkdir(parents=True, exist_ok=True)
 
         self.name = name
+        self.partition = kwargs.get('partition', None)
         self.path = path.resolve()
         self.table = {}
 
@@ -146,6 +147,10 @@ class SlurmScheduler(BaseScheduler):
             '#SBATCH --parsable',
             '#SBATCH --requeue',
         ]
+
+        # Set the job partition
+        if self.partition:
+            lines.append('#SBATCH --partition={self.partition}')
 
         # Prepare the potential array job and the logfile.
         if job.array is None:
