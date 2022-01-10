@@ -109,12 +109,13 @@ If you would like to run the examples as well, be sure to install the *optional*
 you@local:~ $ pip install 'awflow[examples]'
 ```
 
-## TODO
+## Roadmap and TODO
 
 - [ ] Should `schedule` return metadata of jobs and workflow?
 - [ ] Check for cyclic dependencies.
 - [ ] More examples and documentation.
 - [ ] Utilities to cleanup generated metadata and crashed jobs for the Slurm backend.
+- [ ] Can jobs submit jobs on both local and Slurm backend?
 
 ## Contributing
 
