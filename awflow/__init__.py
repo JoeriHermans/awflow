@@ -9,12 +9,6 @@ those annoying submission scripts.
 import os
 import sys
 
-from functools import partial
-from typing import Callable, Union
-
-from .schedulers import schedule
-from .workflow import Job
-
 
 
 ################################################################################
@@ -34,6 +28,14 @@ from .spec import __github__
 ################################################################################
 # Decorators
 ################################################################################
+from functools import partial
+from typing import Callable, Union
+
+from .schedulers import schedule
+from .workflow import Job
+
+
+
 def job(f: Callable = None, /, **kwargs) -> Union[Callable, Job]:
     if f is None:
         return partial(job, **kwargs)
@@ -63,3 +65,9 @@ def ensure(condition: Callable) -> Callable:
         return self
 
     return decorator
+
+
+################################################################################
+# Backend utilities
+################################################################################
+from .schedulers import available_backends

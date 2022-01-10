@@ -4,6 +4,7 @@ import asyncio
 import cloudpickle as pickle
 import contextvars
 import os
+import shutil
 
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -229,7 +230,7 @@ async def to_thread(func: Callable, /, *args, **kwargs) -> Any:
     return await loop.run_in_executor(None, func_call)
 
 
-def schedule(*jobs, backend: str = None, **kwargs) -> List[Any]:
+def schedule(*jobs, backend: str, **kwargs) -> List[Any]:
     jobs = filter(lambda job: not job.done, jobs)  # Filter terminal nodes whose postconditions have been satisfied.
     scheduler = {
         'local': LocalScheduler,
@@ -237,3 +238,16 @@ def schedule(*jobs, backend: str = None, **kwargs) -> List[Any]:
     }.get(backend)(**kwargs)
 
     return asyncio.run(scheduler.gather(*jobs))
+
+
+def detect_slurm() -> bool:
+    output = shutil.which('sbatch')
+    return output != None and len(output) > 0
+
+
+def available_backends() -> List['str']:
+    backends = ['local']
+    if detect_slurm():
+        backends.append('slurm')
+
+    return backends

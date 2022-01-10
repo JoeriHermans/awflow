@@ -1,4 +1,5 @@
 import argparse
+import awflow
 import glob
 import numpy as np
 import os
@@ -39,6 +40,7 @@ def merge():
 
 merge.prune()
 
+assert arguments.backend in awflow.available_backends()
 schedule(merge, backend=arguments.backend, partition=arguments.partition)
 if arguments.backend == 'slurm':
     print("Jobs have been submitted!")
