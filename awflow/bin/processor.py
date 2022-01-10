@@ -1,6 +1,4 @@
-r"""
-Workflow subroutine processing.
-"""
+r"""Workflow subroutine processing."""
 
 import awflow
 import cloudpickle as pickle

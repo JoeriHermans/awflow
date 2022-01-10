@@ -34,7 +34,7 @@ test_requirements = [
     'pytest>=3']
 
 setup(
-    author='Joeri Hermans',
+    author='Joeri Hermans, François Rozet, Arnaud Delaunoy',
     author_email='joeri@peinser.com',
     python_requires='>=3.7',
     classifiers=[
@@ -51,11 +51,11 @@ setup(
     description='Reusable acyclic workflows in Python. Execute code on HPC systems as if you executed them on your laptop!',
     extras_require={
         'dev': _load_requirements('requirements_dev.txt'),
-        'examples': _load_requirements('requirements_examples.txt')
+        'examples': _load_requirements('requirements_examples.txt'),
     },
     include_package_data=True,
     install_requires=_load_requirements(),
-    keywords='awflow workflow workflow-engine hpc slurm hpc-tools',
+    keywords='awflow workflow workflow-engine hpc slurm hpc-tools reproducible-science',
     license='BSD license',
     long_description=readme,
     long_description_content_type='text/markdown',
@@ -70,11 +70,9 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/JoeriHermans/awflow',
-    version='0.0.4',
+    version='0.1.0',
     zip_safe=False,
     entry_points = {
-        'console_scripts': [
-            'awflow = awflow.bin.cli.base:main',
-            ],
+        'console_scripts': [],
         },
 )

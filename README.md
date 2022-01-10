@@ -3,53 +3,96 @@ Reproducible research and reusable acyclic workflows in Python. Execute code on 
 ## Motivation
 
 Would you like fully reproducible research or reusable workflows that seamlessly run on HPC clusters?
-Tired of writing and managing large Slurm submission scripts? Do you have comment out large parts of your pipeline whenever its results have been generated?
+Tired of writing and managing large Slurm submission scripts? Do you have comment out large parts of your pipeline whenever its results have been generated? Hate YAML?
 Don't waste your precious time! `awflow` allows you to directly describe complex pipelines in Python, that run on your personal computer and large HPC clusters.
 
 
 ```python
-import awflow as aw
 import glob
 import numpy as np
+import os
 
-n = 100000
+from awflow import after, ensure, job, schedule
+
+n = 10000
 tasks = 10
 
-@aw.cpus(4)  # Request 4 CPU cores
-@aw.memory("4GB")  # Request 4 GB of RAM
-@aw.postcondition(aw.num_files('pi-*.npy', 10))
-@aw.tasks(tasks)  # Requests '10' parallel tasks
-def estimate(task_index):
-    print("Executing task {} / {}.".format(task_index + 1, tasks))
+@ensure(lambda i: os.path.exists(f'pi-{i}.npy'))
+@job(cpus='4', memory='4GB', array=tasks)
+def estimate(i: int):
+    print(f'Executing task {i + 1} / {tasks}.')
     x = np.random.random(n)
     y = np.random.random(n)
     pi_estimate = (x**2 + y**2 <= 1)
-    np.save('pi-' + str(task_index) + '.npy', pi_estimate)
+    np.save(f'pi-{i}.npy', pi_estimate)
 
-@aw.dependency(estimate)
+@after(estimate)
+@ensure(lambda: os.path.exists('pi.npy'))
+@job(cpus='4')
 def merge():
     files = glob.glob('pi-*.npy')
     stack = np.vstack([np.load(f) for f in files])
-    np.save('pi.npy', stack.sum() / (n * tasks) * 4)
+    pi_estimate = stack.sum() / (n * tasks) * 4
+    print('π ≅', pi_estimate)
+    np.save('pi.npy', pi_estimate)
 
-@aw.dependency(merge)
-@aw.postcondition(aw.exists('pi.npy'))  # Prevent execution if postcondition is satisfied.
-def show_result():
-    print("Pi:", np.load('pi.npy'))
+merge.prune()  # Prune jobs whose postconditions have been satisfied
 
-aw.execute()
+schedule(merge, backend='local')  # Executes merge and its dependencies
 ```
-Executing this Python program (`python examples/pi.py`) on a Slurm HPC cluster will launch the following jobs.
+Executing this Python program (`python examples/pi.py --backend slurm`) on a Slurm HPC cluster will launch the following jobs.
 ```
            1803299       all    merge username PD       0:00      1 (Dependency)
-           1803300       all show_res username PD       0:00      1 (Dependency)
      1803298_[6-9]       all estimate username PD       0:00      1 (Resources)
          1803298_3       all estimate username  R       0:01      1 compute-xx
          1803298_4       all estimate username  R       0:01      1 compute-xx
          1803298_5       all estimate username  R       0:01      1 compute-xx
 ```
+The following example shows how workflow graphs can be dynamically allocated:
+```python
+from awflow import after, job, schedule, terminal_nodes
 
-Check the [examples](examples/) directory and [guide](examples/guide) to explore the functionality.
+@job(cpus='2', memory='4GB', array=5)
+def generate(i: int):
+    print(f'Generating data block {i}.')
+
+@after(generate)
+@job(cpus='1', memory='2GB', array=5)
+def postprocess(i: int):
+    print(f'Postprocessing data block {i}.')
+
+def do_experiment(parameter):
+    r"""This method allocates a `fit` and `make_plot` job
+    based on the specified parameter."""
+
+    @after(postprocess)
+    @job(name=f'fit_{parameter}')  # By default, the name is equal to the function name
+    def fit():
+        print(f'Fit {parameter}.')
+
+    @after(fit)
+    @job(name=f'plt_{parameter}')  # Simplifies the identification of the logfile
+    def make_plot():
+        print(f'Plot {parameter}.')
+
+# Programmatically build workflow
+for parameter in [0.1, 0.2, 0.3, 0.4, 0.5]:
+    do_experiment(parameter)
+
+leafs = terminal_nodes(generate, prune=True)  # Find terminal nodes of workflow graph
+schedule(*leafs, backend='local')
+```
+
+
+Check the [examples](examples/) directory to explore the functionality.
+
+## Usage
+
+TODO
+
+## Available backends
+
+Currently, `awflow.schedule` only supports a `local` and `slurm` backend.
 
 ## Installation
 
@@ -65,62 +108,18 @@ If you would like to run the examples as well, be sure to install the *optional*
 ```console
 you@local:~ $ pip install 'awflow[examples]'
 ```
-## Usage
-The core concept in `awflow` is the notion of a task.
-Essentially, this is a method that will be executed in your workflow.
-Tasks are represented as a node in a directed graph. In doing so,
-we can easily specify (task) dependencies. In addition, we can attribute
-properties to tasks using decorators defined by `awflow`. This
-allows you to specify things like CPU cores, GPU's and even postconditions.
-Follow the [guide](examples/guide) for additional examples and descriptions.
 
-### Decorators
+## Roadmap and TODO
 
-TODO
-
-### Workflow storage
-By default, workflows will be stored in the current working direction within the `./workflows` folder. If desired, a central
-storage directory can be used by specifying the `AWFLOW_STORAGE` environment variable.
-
-## The `awflow` utility
-
-This package comes with a utility program to manage submitted, failed, and pending workflows. Its functionality can be inspected by executing `awflow -h`. In addition, to streamline the management of workflows, we recommend to give every workflow as specific name to easily identify a workflow. This name does not have to be unique for every distinct workflow execution.
-```python
-aw.execute(name=r'Some name')
-```
-Executing `awflow list` after submitting the pipeline with `python pipeline.py [args]` will yield.
-```console
-you@local:~ $ awflow list
-  Postconditions      Status      Backend     Name          Location
- ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  50%                 Running     Slurm       Some name     /home/jhermans/awflow/examples/.workflows/tmpntmc712a
-```
-
-### Modules
-
-> ```you@local:~ $ awflow cancel [workflow]```
-TODO
-
-
-> ```you@local:~ $ awflow clear```
-TODO
-
-
-> ```you@local:~ $ awflow list```
-TODO
-
-
-> ```you@local:~ $ awflow inspect [workflow]```
-TODO
+- [ ] Should `schedule` return metadata of jobs and workflow?
+- [ ] Check for cyclic dependencies.
+- [ ] More examples and documentation.
+- [ ] Utilities to cleanup generated metadata and crashed jobs for the Slurm backend.
+- [ ] Can jobs submit jobs on both local and Slurm backend?
 
 ## Contributing
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md).
-
-### Roadmap
-
-- [ ] Documentation
-- [ ] README
 
 ## License
 

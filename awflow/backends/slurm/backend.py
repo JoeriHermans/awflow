@@ -1,1 +1,0 @@
-__backend__ = 'slurm'

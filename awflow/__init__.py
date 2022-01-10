@@ -8,7 +8,6 @@ those annoying submission scripts.
 
 import os
 import sys
-import time
 
 
 
@@ -20,12 +19,6 @@ if sys.version_info < (3,):
 
 
 ################################################################################
-# Increase recursion depth (to handle large workflow graph pruning)
-################################################################################
-sys.setrecursionlimit(10000)
-
-
-################################################################################
 # Global specifications
 ################################################################################
 from .spec import __version__
@@ -33,47 +26,60 @@ from .spec import __github__
 
 
 ################################################################################
-# Autoload imports
+# Decorators
 ################################################################################
-from . import utils
-from . import backends
+from functools import partial
+from typing import Callable, Union
+
+from .schedulers import schedule
+from .workflow import Job
+
+
+
+def job(f: Callable = None, /, **kwargs) -> Union[Callable, Job]:
+    if f is None:
+        return partial(job, **kwargs)
+    else:
+        return Job(f, **kwargs)
+
+
+def after(*deps, status: str = 'success') -> Callable:
+    def decorator(self: Job) -> Job:
+        self.after(*deps, status=status)
+        return self
+
+    return decorator
+
+
+def waitfor(mode: str) -> Callable:
+    def decorator(self: Job) -> Job:
+        self.waitfor = mode
+        return self
+
+    return decorator
+
+
+def ensure(condition: Callable) -> Callable:
+    def decorator(self: Job) -> Job:
+        self.ensure(condition)
+        return self
+
+    return decorator
+
+
+def disable(job: Job = None) -> Callable:
+    job.disabled = True
+
+    return job
 
 
 ################################################################################
-# Default computational graph definition
+# Backend utilities
 ################################################################################
-from awflow.dawg import DirectedAcyclicWorkflowGraph as DAWG
-
-workflow = DAWG()  # Too bad there is a PyPi package called `dawg`.
+from .schedulers import available_backends  # Yields the available backends
 
 
 ################################################################################
-# Load the plugins module
+# Workflow utilities
 ################################################################################
-from . import plugins
-
-
-################################################################################
-# Load the function decorators
-################################################################################
-from .decorators import *
-
-
-################################################################################
-# Set the compute backend
-################################################################################
-backend = backends.autodetect()
-
-def execute(**kwargs) -> None:
-    # Prepare the workflow
-    workflow.metadata['args'] = sys.argv[1:]
-    workflow.metadata['datetime'] = time.time()
-    workflow.metadata['pipeline'] = os.path.abspath(sys.argv[0])
-    workflow.metadata['version'] = __version__
-    workflow.name = kwargs.get('name', '')
-    workflow_dir = os.environ.get('AWFLOW_STORAGE', '.workflows')
-    backend.execute(workflow=workflow, dir=workflow_dir, **kwargs)
-    workflow.clear()
-
-def clear() -> None:
-    workflow.clear()
+from .workflow import terminal_nodes  # Yields the terminal nodes of a set of roots
