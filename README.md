@@ -72,6 +72,7 @@ you@local:~ $ pip install 'awflow[examples]'
 
 ## TODO
 
+- [ ] Should `schedule` return metadata of jobs and workflow?
 - [ ] Check for cyclic dependencies.
 - [ ] More examples and documentation.
 - [ ] Utilities to cleanup generated metadata and crashed jobs for the Slurm backend.
