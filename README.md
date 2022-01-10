@@ -83,6 +83,7 @@ leafs = terminal_nodes(generate, prune=True)  # Find terminal nodes of workflow 
 schedule(*leafs, backend='local')
 ```
 
+
 Check the [examples](examples/) directory to explore the functionality.
 
 ## Usage
