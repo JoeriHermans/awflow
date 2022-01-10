@@ -10,7 +10,8 @@ def postprocess(i: int):
     print(f'Postprocessing data block {i}.')
 
 def do_experiment(parameter):
-    r""""""
+    r"""This method allocates a `fit` and `make_plot` job
+    based on the specified parameter."""
 
     @after(postprocess)
     @job(name=f'fit_{parameter}')  # By default, the name is equal to the function name
