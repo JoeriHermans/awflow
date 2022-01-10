@@ -70,6 +70,12 @@ If you would like to run the examples as well, be sure to install the *optional*
 you@local:~ $ pip install 'awflow[examples]'
 ```
 
+## TODO
+
+- [ ] Check for cyclic dependencies.
+- [ ] More examples and documentation.
+- [ ] Utilities to cleanup generated metadata and crashed jobs for the Slurm backend.
+
 ## Contributing
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md).
