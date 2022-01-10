@@ -16,10 +16,6 @@ from .workflow import Job
 
 
 
-class CyclicDependencyGraphError(Exception):
-    pass
-
-
 class DependencyNeverSatisfiedException(Exception):
     pass
 
