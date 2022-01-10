@@ -71,7 +71,6 @@ class Job(Node):
         # Postconditions.
         self.postconditions = []
         self.pruned = False
-        self.disabled = False
 
     @property
     def fn(self) -> Callable:
