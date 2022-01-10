@@ -67,12 +67,6 @@ def ensure(condition: Callable) -> Callable:
     return decorator
 
 
-def disable(job: Job = None) -> Callable:
-    job.disabled = True
-
-    return job
-
-
 ################################################################################
 # Backend utilities
 ################################################################################

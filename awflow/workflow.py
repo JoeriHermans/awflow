@@ -73,28 +73,14 @@ class Job(Node):
         self.pruned = False
         self.disabled = False
 
-    def _verify_postconditions(self, args: Any = None) -> bool:
-        if len(self.postconditions) > 0:
-            verified = True
-            for postcondition in self.postconditions:
-                sig = inspect.signature(postcondition)
-                if len(sig.parameters) >= 1:
-                    verified &= postcondition(args)
-                else:
-                    verified &= postcondition()
-        else:
-            verified = True
-
-        return verified
-
     @property
     def fn(self) -> Callable:
-        name, f = self.name, self._fn
+        name, f, postconditions = self.name, self._fn, self.postconditions
 
         def call(*args) -> Any:
             result = f(*args)
 
-            assert self._verify_postconditions(*args), f'job {name} does not satisfy its postcondition'
+            assert _verify_postconditions(postconditions, *args), f'job {name} does not satisfy its postconditions.'
 
             return result
 
@@ -146,17 +132,6 @@ class Job(Node):
             return
         self.pruned = True
 
-        disabled = {
-            dep for dep, status in self.dependencies.items()
-            if dep.disabled
-        }
-
-        # Attach dependencies of disabled dependencies to current node.
-        for dep in disabled:
-            self.rm_parent(dep)
-            for parent in dep.dependencies:
-                self.add_parent(parent)
-
         done = {
             dep for dep, status in self.dependencies.items()
             if dep.done
@@ -175,10 +150,23 @@ class Job(Node):
         if self.array is not None and len(self.postconditions) > 0:
             pending = {
                 i for i in self.array
-                if not self._verify_postconditions(i)
+                if not _verify_postconditions(self.postconditions, i)
             }
             if len(pending) < len(self.array):
                 self.array = pending
+
+
+def _verify_postconditions(postconditions: List[Callable], args: Any = None) -> bool:
+    verified = True
+    if len(postconditions) > 0:
+        for postcondition in postconditions:
+            sig = inspect.signature(postcondition)
+            if len(sig.parameters) >= 1:
+                verified &= postcondition(args)
+            else:
+                verified &= postcondition()
+
+    return verified
 
 
 def terminal_nodes(*roots, prune: bool = False) -> Set[Node]:
