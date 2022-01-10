@@ -207,7 +207,7 @@ class SlurmScheduler(BaseScheduler):
             f.write('\n'.join(lines))
 
         # Submit job
-        output = run(['sbatch'], str(bashfile), capture_output=True, check=True, text=True).stdout
+        output = run(['sbatch', str(bashfile)], capture_output=True, check=True, text=True).stdout
         for jobid in output.splitlines():
             return jobid
 
