@@ -154,14 +154,14 @@ class SlurmScheduler(BaseScheduler):
 
         # Prepare the potential array job and the logfile.
         if job.array is None:
-            logfile = self.path / f'{self.id(job)}.log'
+            logfile = self.path / f'{job.name}_%j.log'
         else:
             array = job.array
             if type(array) is range:
                 lines.append('#SBATCH --array=' + f'{array.start}-{array.stop-1}:{array.step}')
             else:
                 lines.append('#SBATCH --array=' + ','.join(map(str, array)))
-            logfile = self.path / f'{self.id(job)}_%a.log'
+            logfile = self.path / f'{job.name}_%j_%a.log'
         lines.append(f'#SBATCH --output={logfile}')
 
         # Specify the resources.
