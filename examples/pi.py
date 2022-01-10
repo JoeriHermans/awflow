@@ -16,14 +16,18 @@ parser.add_argument('--backend', type=str, default='local', help='Compute backen
 parser.add_argument('--partition', type=str, default=None, help='Partition to deploy the jobs on and can only be specified through the Slurm backend (default: none).')
 arguments, _ = parser.parse_known_args()
 
+
+# Show available backends if requested
 if arguments.backends:
     print(awflow.available_backends())
     sys.exit(0)
 
-# Script parameters
+
+## BEGIN Workflow definition ###################################################
+
+# Workflow parameters
 n = 10000
 tasks = 25
-
 
 @ensure(lambda i: os.path.exists(f'pi-{i}.npy'))
 @job(cpus='4', memory='4GB', array=tasks)
@@ -44,8 +48,10 @@ def merge():
     print('π ≅', pi_estimate)
     np.save('pi.npy', pi_estimate)
 
+# Prune jobs whose postconditions have been satisified
 merge.prune()
 
+# Schedule the jobs for execution
 schedule(merge, backend=arguments.backend, partition=arguments.partition)
 if arguments.backend == 'slurm':
     print("Jobs have been submitted!")
