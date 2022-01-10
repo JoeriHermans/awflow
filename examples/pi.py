@@ -59,4 +59,4 @@ print(leafs)  # prints merge_and_show
 # Schedule the jobs for execution
 schedule(*leafs, backend=arguments.backend, partition=arguments.partition)
 if arguments.backend == 'slurm':
-    print("Jobs have been submitted!")
+    print('Jobs have been submitted!')
