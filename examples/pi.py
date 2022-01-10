@@ -18,6 +18,7 @@ arguments, _ = parser.parse_known_args()
 
 if arguments.backends:
     print(awflow.available_backends())
+    sys.exit(0)
 
 # Script parameters
 n = 10000
