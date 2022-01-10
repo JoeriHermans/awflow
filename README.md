@@ -111,6 +111,7 @@ you@local:~ $ pip install 'awflow[examples]'
 
 ## Roadmap and TODO
 
+- [ ] Add utilities for common post-conditions.
 - [ ] Should `schedule` return metadata of jobs and workflow?
 - [ ] Check for cyclic dependencies.
 - [ ] More examples and documentation.
