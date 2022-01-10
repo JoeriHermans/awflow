@@ -7,6 +7,13 @@ those annoying submission scripts.
 """
 
 import os
+import sys
+
+from functools import partial
+from typing import Callable, Union
+
+from .schedulers import schedule
+from .workflow import Job
 
 
 
@@ -22,3 +29,37 @@ if sys.version_info < (3,):
 ################################################################################
 from .spec import __version__
 from .spec import __github__
+
+
+################################################################################
+# Decorators
+################################################################################
+def job(f: Callable = None, /, **kwargs) -> Union[Callable, Job]:
+    if f is None:
+        return partial(job, **kwargs)
+    else:
+        return Job(f, **kwargs)
+
+
+def after(*deps, status: str = 'success') -> Callable:
+    def decorator(self: Job) -> Job:
+        self.after(*deps, status=status)
+        return self
+
+    return decorator
+
+
+def waitfor(mode: str) -> Callable:
+    def decorator(self: Job) -> Job:
+        self.waitfor = mode
+        return self
+
+    return decorator
+
+
+def ensure(condition: Callable) -> Callable:
+    def decorator(self: Job) -> Job:
+        self.ensure(condition)
+        return self
+
+    return decorator
