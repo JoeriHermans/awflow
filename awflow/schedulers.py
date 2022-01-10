@@ -31,7 +31,7 @@ class JobNotFailedException(Exception):
 class BaseScheduler(ABC):
     r"""Abstract workflow scheduler."""
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.submissions = {}
 
     async def gather(self, *jobs) -> List[Any]:
@@ -114,7 +114,7 @@ class SlurmScheduler(BaseScheduler):
         path: str = '.workflows',
         **kwargs,
     ):
-        super().__init__(*jobs)
+        super().__init__(*jobs, **kwargs)
         if name is None:
             name = datetime.now().strftime('%y%m%d_%H%M%S')
         path = Path(path) / name
