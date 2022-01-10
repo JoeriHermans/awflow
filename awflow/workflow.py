@@ -151,7 +151,7 @@ class Job(Node):
             if dep.disabled
         }
 
-        # Attach parents of disabled dependencies to current node.
+        # Attach dependencies of disabled dependencies to current node.
         for dep in disabled:
             self.rm_parent(dep)
             for parent in dep.dependencies:
