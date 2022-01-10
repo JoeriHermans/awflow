@@ -15,7 +15,7 @@ import os
 from awflow import after, ensure, job, schedule
 
 n = 10000
-tasks = 25
+tasks = 10
 
 @ensure(lambda i: os.path.exists(f'pi-{i}.npy'))
 @job(cpus='4', memory='4GB', array=tasks)
