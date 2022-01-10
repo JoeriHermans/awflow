@@ -7,6 +7,13 @@ from awflow import after, ensure, job, schedule
 
 
 
+# Prepare argument parser
+parser = argparse.ArgumentParser('awflow `π` demo.')
+parser.add_argument('--backend', type=str, default='local', help='Compute backend (default: local).')
+parser.add_argument('--partition', type=str, default=None, help='Partition to deploy the jobs on and can only be specified through the Slurm backend (default: none).')
+arguments, _ = parser.parse_known_args()
+
+# Script parameters
 n = 10000
 tasks = 25
 
@@ -32,4 +39,4 @@ def merge():
 
 merge.prune()
 
-schedule(merge, backend='local')
+schedule(merge, backend=arguments.backend, partition=arguments.partition)

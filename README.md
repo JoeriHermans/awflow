@@ -8,13 +8,14 @@ Don't waste your precious time! `awflow` allows you to directly describe complex
 
 
 ```python
+import glob
 import numpy as np
 import os
 
 from awflow import after, ensure, job, schedule
 
 n = 10000
-tasks = 10
+tasks = 25
 
 @ensure(lambda i: os.path.exists(f'pi-{i}.npy'))
 @job(cpus='4', memory='4GB', array=tasks)
@@ -26,22 +27,22 @@ def estimate(i):
     np.save(f'pi-{i}.npy', pi_estimate)
 
 @after(estimate)
+@ensure(lambda: os.path.exists('pi.npy'))
 @job(cpus='4')
 def merge():
     files = glob.glob('pi-*.npy')
     stack = np.vstack([np.load(f) for f in files])
     pi_estimate = stack.sum() / (n * tasks) * 4
+    print('π ≅', pi_estimate)
     np.save('pi.npy', pi_estimate)
-    print(pi_estimate)
 
-merge.prune()  # Prune dependencies whose postconditions have already been satisfied.
+merge.prune()
 
-schedule(merge, backend='local')  # Uses the local compute backend
+schedule(merge, backend='local')
 ```
-Executing this Python program (`python examples/pi.py --slurm`) on a Slurm HPC cluster will launch the following jobs.
+Executing this Python program (`python examples/pi.py --backend slurm`) on a Slurm HPC cluster will launch the following jobs.
 ```
            1803299       all    merge username PD       0:00      1 (Dependency)
-           1803300       all show_res username PD       0:00      1 (Dependency)
      1803298_[6-9]       all estimate username PD       0:00      1 (Resources)
          1803298_3       all estimate username  R       0:01      1 compute-xx
          1803298_4       all estimate username  R       0:01      1 compute-xx
