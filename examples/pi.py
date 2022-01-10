@@ -40,5 +40,5 @@ def merge():
 merge.prune()
 
 schedule(merge, backend=arguments.backend, partition=arguments.partition)
-if arguments.backend is 'slurm':
+if arguments.backend == 'slurm':
     print("Jobs have been submitted!")
