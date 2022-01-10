@@ -140,7 +140,7 @@ class SlurmScheduler(BaseScheduler):
 
         # Prepare the submission file.
         lines = [
-            f"#!/usr/bin/env {os.environ['SHELL']}",
+            f"#!{os.environ['SHELL']}",
             '#',
             f'#SBATCH --job-name={job.name}',
             '#SBATCH --export=ALL',
