@@ -3,6 +3,9 @@ import time
 from awflow import job, after, waitfor, ensure, schedule
 
 
+def check():
+    return True
+
 
 @job
 def a():
@@ -10,9 +13,6 @@ def a():
     time.sleep(3)
     print('a')
     raise Exception()
-
-def check():
-    return True
 
 @ensure(check)
 @job
@@ -55,4 +55,4 @@ for attempt in range(5):
 for node in terminal_nodes:
     node.prune()
 
-schedule(*terminal_nodes, backend='local')  # prints a b b c42 a d d
+schedule(*terminal_nodes, backend='local')  # prints a a c42 d d 0 1 2 3 4

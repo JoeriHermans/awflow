@@ -104,6 +104,10 @@ class LocalScheduler(BaseScheduler):
             return error
 
 
+class SlurmScheduler(BaseScheduler):
+    r"""Local scheduler."""
+
+
 async def to_thread(func: Callable, /, *args, **kwargs) -> Any:
     r"""Asynchronously run function `func` in a separate thread.
 
@@ -128,6 +132,7 @@ async def to_thread(func: Callable, /, *args, **kwargs) -> Any:
 def schedule(*jobs, backend: str = None, **kwargs) -> List[Any]:
     scheduler = {
         'local': LocalScheduler,
+        'slurm': SlurmScheduler,
     }.get(backend)(**kwargs)
 
     return asyncio.run(scheduler.gather(*jobs))

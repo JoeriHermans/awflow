@@ -31,6 +31,7 @@ class Node:
 
     def rm_child(self, node: 'Node') -> None:
         del self._children[node]
+        del node._parents[self]
 
     def rm_parent(self, node: 'Node') -> None:
         node.rm_child(self)
@@ -149,7 +150,7 @@ class Job(Node):
 
         done = {
             dep for dep, status in self.dependencies.items()
-            if status == 'success' and dep.done
+            if dep.done
         }
 
         if self.waitfor == 'any' and done:
