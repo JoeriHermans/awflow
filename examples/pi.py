@@ -8,7 +8,7 @@ from awflow import after, ensure, job, schedule
 
 
 # Prepare argument parser
-parser = argparse.ArgumentParser('awflow `π` demo.')
+parser = argparse.ArgumentParser('awflow π demo.')
 parser.add_argument('--backend', type=str, default='local', help='Compute backend (default: local).')
 parser.add_argument('--partition', type=str, default=None, help='Partition to deploy the jobs on and can only be specified through the Slurm backend (default: none).')
 arguments, _ = parser.parse_known_args()
@@ -29,7 +29,7 @@ def estimate(i):
 
 @after(estimate)
 @ensure(lambda: os.path.exists('pi.npy'))
-@job(cpus='4')
+@job(cpus='4', name='merge_and_show')  # Ability to overwrite job name
 def merge():
     files = glob.glob('pi-*.npy')
     stack = np.vstack([np.load(f) for f in files])
