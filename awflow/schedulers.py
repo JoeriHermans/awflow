@@ -112,6 +112,7 @@ class SlurmScheduler(BaseScheduler):
         *jobs,
         name: str = None,
         path: str = '.awflow',
+        **kwargs,
     ):
         super().__init__(*jobs)
         if name is None:
@@ -200,11 +201,10 @@ class SlurmScheduler(BaseScheduler):
         with open(bashfile, 'w') as f:
             f.write('\n'.join(lines))
 
-        print(job.name)
         # Submit job
-        # output = run(['sbatch'], str(bashfile), capture_output=True, check=True, text=True).stdout
-        # for jobid in output.splitlines():
-        #    return jobid
+        output = run(['sbatch'], str(bashfile), capture_output=True, check=True, text=True).stdout
+        for jobid in output.splitlines():
+            return jobid
 
 
 async def to_thread(func: Callable, /, *args, **kwargs) -> Any:
