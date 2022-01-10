@@ -1,6 +1,7 @@
 import argparse
 import awflow
 import glob
+import sys
 import numpy as np
 import os
 
@@ -10,9 +11,13 @@ from awflow import after, ensure, job, schedule
 
 # Prepare argument parser
 parser = argparse.ArgumentParser('awflow π demo.')
+parser.add_argument('--backends', action='store_true', help='Shows the available backends and exits.')
 parser.add_argument('--backend', type=str, default='local', help='Compute backend (default: local).')
 parser.add_argument('--partition', type=str, default=None, help='Partition to deploy the jobs on and can only be specified through the Slurm backend (default: none).')
 arguments, _ = parser.parse_known_args()
+
+if arguments.backends:
+    print(awflow.available_backends())
 
 # Script parameters
 n = 10000
@@ -40,7 +45,6 @@ def merge():
 
 merge.prune()
 
-assert arguments.backend in awflow.available_backends()
 schedule(merge, backend=arguments.backend, partition=arguments.partition)
 if arguments.backend == 'slurm':
     print("Jobs have been submitted!")

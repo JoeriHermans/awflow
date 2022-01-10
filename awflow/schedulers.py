@@ -8,6 +8,7 @@ import shutil
 
 from abc import ABC, abstractmethod
 from datetime import datetime
+from functools import lru_cache
 from functools import partial
 from pathlib import Path
 from subprocess import run
@@ -231,6 +232,8 @@ async def to_thread(func: Callable, /, *args, **kwargs) -> Any:
 
 
 def schedule(*jobs, backend: str, **kwargs) -> List[Any]:
+    assert backend in available_backends()
+
     jobs = filter(lambda job: not job.done, jobs)  # Filter terminal nodes whose postconditions have been satisfied.
     scheduler = {
         'local': LocalScheduler,
@@ -244,7 +247,7 @@ def detect_slurm() -> bool:
     output = shutil.which('sbatch')
     return output != None and len(output) > 0
 
-
+@lru_cache(maxsize=None)  # @cache from Python 3.9
 def available_backends() -> List['str']:
     backends = ['local']
     if detect_slurm():
