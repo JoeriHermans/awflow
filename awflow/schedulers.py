@@ -105,7 +105,35 @@ class LocalScheduler(BaseScheduler):
 
 
 class SlurmScheduler(BaseScheduler):
-    r"""Local scheduler."""
+    r"""Scheduler for the Slurm workload manager."""
+
+    def __init__(
+        self,
+        *jobs,
+        name: str = None,
+        path: str = '.awflow',
+    ):
+        super().__init__(*jobs)
+        if name is None:
+            name = datetime.now().strftime('%y%m%d_%H%M%S')
+        path = Path(path) / name
+        path.mkdir(parents=True, exist_ok=True)
+
+        self.name = name
+        self.path = path.resolve()
+        self.table = {}
+
+    def id(self, job: Job) -> str:
+        identifier = str(id(job))
+        self.table[identifier] = job
+
+        return identifier
+
+    def scriptlines(self, job: Job, variables: Dict[str, str] = {}) -> List[str]:
+        pass
+
+    async def _submit(self, job: Job) -> str:
+        pass
 
 
 async def to_thread(func: Callable, /, *args, **kwargs) -> Any:
