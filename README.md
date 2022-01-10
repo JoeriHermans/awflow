@@ -36,7 +36,7 @@ def merge():
     print('π ≅', pi_estimate)
     np.save('pi.npy', pi_estimate)
 
-merge.prune()
+merge.prune()  # Prune jobs whose postconditions have been satisfied
 
 schedule(merge, backend='local')
 ```
