@@ -111,7 +111,7 @@ class SlurmScheduler(BaseScheduler):
         self,
         *jobs,
         name: str = None,
-        path: str = '.awflow',
+        path: str = '.workflows',
         **kwargs,
     ):
         super().__init__(*jobs)
