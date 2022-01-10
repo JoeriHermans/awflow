@@ -19,7 +19,7 @@ tasks = 10
 
 @ensure(lambda i: os.path.exists(f'pi-{i}.npy'))
 @job(cpus='4', memory='4GB', array=tasks)
-def estimate(i):
+def estimate(i: int):
     print(f'Executing task {i + 1} / {tasks}.')
     x = np.random.random(n)
     y = np.random.random(n)
@@ -38,7 +38,7 @@ def merge():
 
 merge.prune()  # Prune jobs whose postconditions have been satisfied
 
-schedule(merge, backend='local')
+schedule(merge, backend='local')  # Executes merge and its dependencies
 ```
 Executing this Python program (`python examples/pi.py --backend slurm`) on a Slurm HPC cluster will launch the following jobs.
 ```
@@ -48,6 +48,7 @@ Executing this Python program (`python examples/pi.py --backend slurm`) on a Slu
          1803298_4       all estimate username  R       0:01      1 compute-xx
          1803298_5       all estimate username  R       0:01      1 compute-xx
 ```
+The following example shows how workflow graphs can be dynamically allocated:
 ```python
 from awflow import after, job, schedule, terminal_nodes
 
@@ -61,7 +62,8 @@ def postprocess(i: int):
     print(f'Postprocessing data block {i}.')
 
 def do_experiment(parameter):
-    r""""""
+    r"""This method allocates a `fit` and `make_plot` job
+    based on the specified parameter."""
 
     @after(postprocess)
     @job(name=f'fit_{parameter}')  # By default, the name is equal to the function name
@@ -86,6 +88,10 @@ Check the [examples](examples/) directory to explore the functionality.
 ## Usage
 
 TODO
+
+## Available backends
+
+Currently, `awflow.schedule` only supports a `local` and `slurm` backend.
 
 ## Installation
 
