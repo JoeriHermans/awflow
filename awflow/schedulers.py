@@ -247,6 +247,7 @@ def detect_slurm() -> bool:
     output = shutil.which('sbatch')
     return output != None and len(output) > 0
 
+
 @lru_cache(maxsize=None)  # @cache from Python 3.9
 def available_backends() -> List['str']:
     backends = ['local']
