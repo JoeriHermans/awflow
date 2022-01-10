@@ -1,6 +1,6 @@
 import time
 
-from awflow import job, after, waitfor, ensure, schedule
+from awflow import job, after, waitfor, disable, ensure, schedule
 
 
 @job

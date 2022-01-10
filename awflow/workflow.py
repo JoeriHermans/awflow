@@ -30,8 +30,10 @@ class Node:
         node.add_child(self, edge)
 
     def rm_child(self, node: 'Node') -> None:
-        del self._children[node]
-        del node._parents[self]
+        if node in self._children:
+            del self._children[node]
+        if self in node._parents:
+            del node._parents[self]
 
     def rm_parent(self, node: 'Node') -> None:
         node.rm_child(self)
@@ -69,6 +71,7 @@ class Job(Node):
         # Postconditions.
         self.postconditions = []
         self.pruned = False
+        self.disabled = False
 
     def _verify_postconditions(self, args: Any = None) -> bool:
         if len(self.postconditions) > 0:
@@ -142,6 +145,17 @@ class Job(Node):
         if self.pruned:
             return
         self.pruned = True
+
+        disabled = {
+            dep for dep, status in self.dependencies.items()
+            if dep.disabled
+        }
+
+        # Attach parents of disabled dependencies to current node.
+        for dep in disabled:
+            self.rm_parent(dep)
+            for parent in dep.dependencies:
+                self.add_parent(parent)
 
         done = {
             dep for dep, status in self.dependencies.items()
