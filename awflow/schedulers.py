@@ -150,7 +150,7 @@ class SlurmScheduler(BaseScheduler):
 
         # Set the job partition
         if self.partition:
-            lines.append('#SBATCH --partition={self.partition}')
+            lines.append(f'#SBATCH --partition={self.partition}')
 
         # Prepare the potential array job and the logfile.
         if job.array is None:
