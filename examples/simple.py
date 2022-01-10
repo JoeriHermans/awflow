@@ -3,10 +3,6 @@ import time
 from awflow import job, after, waitfor, ensure, schedule
 
 
-def check():
-    return True
-
-
 @job
 def a():
     print('a')
@@ -14,7 +10,10 @@ def a():
     print('a')
     raise Exception()
 
-@ensure(check)
+def check_something():
+    return True
+
+@ensure(check_something)
 @job
 def b():
     time.sleep(1)
@@ -40,19 +39,6 @@ def d():
     time.sleep(1)
     print('d')
 
+d.prune()  # Prune jobs whose postconditions have been satisfied.
 
-terminal_nodes = []
-
-
-for attempt in range(5):
-
-    @after(d)
-    @job
-    def e(index=attempt):
-        print(index)
-    terminal_nodes.append(e)
-
-for node in terminal_nodes:
-    node.prune()
-
-schedule(*terminal_nodes, backend='slurm', partition='debug')  # prints a a c42 d d 0 1 2 3 4
+schedule(d, backend='local')  # prints b b c42 d d

@@ -3,7 +3,7 @@ Reproducible research and reusable acyclic workflows in Python. Execute code on 
 ## Motivation
 
 Would you like fully reproducible research or reusable workflows that seamlessly run on HPC clusters?
-Tired of writing and managing large Slurm submission scripts? Do you have comment out large parts of your pipeline whenever its results have been generated?
+Tired of writing and managing large Slurm submission scripts? Do you have comment out large parts of your pipeline whenever its results have been generated? Hate YAML?
 Don't waste your precious time! `awflow` allows you to directly describe complex pipelines in Python, that run on your personal computer and large HPC clusters.
 
 
@@ -65,6 +65,10 @@ If you would like to run the examples as well, be sure to install the *optional*
 ```console
 you@local:~ $ pip install 'awflow[examples]'
 ```
+
+## Usage
+
+TODO
 
 ## Contributing
 
