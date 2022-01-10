@@ -55,4 +55,4 @@ for attempt in range(5):
 for node in terminal_nodes:
     node.prune()
 
-schedule(*terminal_nodes, backend='local')  # prints a a c42 d d 0 1 2 3 4
+schedule(*terminal_nodes, backend='slurm')  # prints a a c42 d d 0 1 2 3 4

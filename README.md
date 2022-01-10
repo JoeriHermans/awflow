@@ -65,62 +65,10 @@ If you would like to run the examples as well, be sure to install the *optional*
 ```console
 you@local:~ $ pip install 'awflow[examples]'
 ```
-## Usage
-The core concept in `awflow` is the notion of a task.
-Essentially, this is a method that will be executed in your workflow.
-Tasks are represented as a node in a directed graph. In doing so,
-we can easily specify (task) dependencies. In addition, we can attribute
-properties to tasks using decorators defined by `awflow`. This
-allows you to specify things like CPU cores, GPU's and even postconditions.
-Follow the [guide](examples/guide) for additional examples and descriptions.
-
-### Decorators
-
-TODO
-
-### Workflow storage
-By default, workflows will be stored in the current working direction within the `./workflows` folder. If desired, a central
-storage directory can be used by specifying the `AWFLOW_STORAGE` environment variable.
-
-## The `awflow` utility
-
-This package comes with a utility program to manage submitted, failed, and pending workflows. Its functionality can be inspected by executing `awflow -h`. In addition, to streamline the management of workflows, we recommend to give every workflow as specific name to easily identify a workflow. This name does not have to be unique for every distinct workflow execution.
-```python
-aw.execute(name=r'Some name')
-```
-Executing `awflow list` after submitting the pipeline with `python pipeline.py [args]` will yield.
-```console
-you@local:~ $ awflow list
-  Postconditions      Status      Backend     Name          Location
- ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  50%                 Running     Slurm       Some name     /home/jhermans/awflow/examples/.workflows/tmpntmc712a
-```
-
-### Modules
-
-> ```you@local:~ $ awflow cancel [workflow]```
-TODO
-
-
-> ```you@local:~ $ awflow clear```
-TODO
-
-
-> ```you@local:~ $ awflow list```
-TODO
-
-
-> ```you@local:~ $ awflow inspect [workflow]```
-TODO
 
 ## Contributing
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md).
-
-### Roadmap
-
-- [ ] Documentation
-- [ ] README
 
 ## License
 

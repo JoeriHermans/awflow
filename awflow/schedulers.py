@@ -129,11 +129,82 @@ class SlurmScheduler(BaseScheduler):
 
         return identifier
 
-    def scriptlines(self, job: Job, variables: Dict[str, str] = {}) -> List[str]:
-        pass
-
     async def _submit(self, job: Job) -> str:
-        pass
+        # Wait for the dependencies to be submitted.
+        jobids = await asyncio.gather(*[
+            self.submit(dep)
+            for dep in job.dependencies
+        ])
+
+        # Prepare the submission file.
+        lines = [
+            '#!/usr/bin/env $SHELL',
+            '#',
+            f'#SBATCH --job-name={job.name}',
+            '#SBATCH --export=ALL',
+            '#SBATCH --parsable',
+            '#SBATCH --requeue',
+        ]
+
+        # Prepare the potential array job and the logfile.
+        if job.array is None:
+            logfile = self.path / f'{self.id(job)}.log'
+        else:
+            array = job.array
+            if type(array) is range:
+                lines.append('#SBATCH --array=' + f'{array.start}-{array.stop-1}:{array.step}')
+            else:
+                lines.append('#SBATCH --array=' + ','.join(map(str, array)))
+            logfile = self.path / f'{self.id(job)}_%a.log'
+        lines.append(f'#SBATCH --output={logfile}')
+
+        # Specify the resources.
+        translate = {
+            'cpus': 'cpus-per-task',
+            'gpus': 'gpus-per-task',
+            'memory': 'mem',
+            'timelimit': 'time',
+        }
+        for key, value in job.settings.items():
+            key = translate.get(key, key)
+            if value is None:
+                lines.append(f'#SBATCH --{key}')
+            else:
+                lines.append(f'#SBATCH --{key}={value}')
+
+        # Specify job dependencies.
+        separator = '?' if job.waitfor == 'any' else ','
+        keywords = {
+            'success': 'afterok',
+            'failure': 'afternotok',
+            'any': 'afterany',
+        }
+        deps = [
+            f'{keywords[status]}:{jobid}'
+            for jobid, (_, status) in zip(jobids, job.dependencies.items())
+        ]
+        if deps:
+            lines.append('#SBATCH --dependency=' + separator.join(deps))
+
+        # Dump the job and add the executor to the script.
+        pklfile = self.path / f'{self.id(job)}.pkl'
+        with open(pklfile, 'wb') as f:
+            f.write(pickle.dumps(job.fn))
+        command = f'python -m awflow.bin.processor {pklfile}'
+        if job.array is not None:
+            command += ' $SLURM_ARRAY_TASK_ID'
+        lines.append(command)
+
+        # Save the generated script
+        bashfile = self.path / f'{self.id(job)}.sh'
+        with open(bashfile, 'w') as f:
+            f.write('\n'.join(lines))
+
+        print(job.name)
+        # Submit job
+        # output = run(['sbatch'], str(bashfile), capture_output=True, check=True, text=True).stdout
+        # for jobid in output.splitlines():
+        #    return jobid
 
 
 async def to_thread(func: Callable, /, *args, **kwargs) -> Any:
