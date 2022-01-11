@@ -86,10 +86,6 @@ schedule(*leafs, backend='local')
 
 Check the [examples](examples/) directory to explore the functionality.
 
-## Usage
-
-TODO
-
 ## Available backends
 
 Currently, `awflow.schedule` only supports a `local` and `slurm` backend.

@@ -50,6 +50,7 @@ setup(
     description='Reusable acyclic workflows in Python. Execute code on HPC systems as if you executed them on your laptop!',
     extras_require={
         'examples': _load_requirements('requirements_examples.txt'),
+        'dev': _load_requirements('requirements_dev.txt')
     },
     include_package_data=True,
     install_requires=_load_requirements(),

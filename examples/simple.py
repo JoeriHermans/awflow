@@ -1,7 +1,7 @@
 import awflow
 import time
 
-from awflow import job, after, waitfor, disable, ensure, schedule, leafs
+from awflow import job, after, waitfor, ensure, schedule
 
 
 @job
@@ -15,7 +15,6 @@ def check_something():
     return True
 
 @ensure(check_something)
-@disable
 @job
 def b():
     time.sleep(1)
@@ -46,4 +45,4 @@ def d():
 def e():
     print('e')
 
-schedule(*leafs(a), backend='local')  # prints a a c42 d e d (e is executed concurrently by asyncio)
+schedule(d, e, backend='local')  # prints a a c42 d e d (e is executed concurrently by asyncio)

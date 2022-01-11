@@ -5,7 +5,7 @@ import sys
 import numpy as np
 import os
 
-from awflow import after, ensure, job, schedule, leafs
+from awflow import after, ensure, job, schedule
 
 
 
@@ -32,7 +32,7 @@ def estimate(i):
     np.save(f'pi-{i}.npy', pi_estimate)
 
 @after(estimate)
-@ensure(lambda: len(glob.glob('*.npy')) == tasks, when='before')  # Check precondition before start at runtime
+@ensure(lambda: len(glob.glob('pi-*.npy')) == tasks, when='before')  # Check precondition before start at runtime
 @ensure(lambda: os.path.exists('pi.npy'))  # Postcondition
 @job(cpus='4', name='merge_and_show')  # Ability to overwrite job name
 def merge():
@@ -42,10 +42,7 @@ def merge():
     print('π ≅', pi_estimate)
     np.save('pi.npy', pi_estimate)
 
-jobs = leafs(estimate)  # Find the leaf nodes of the graph
-print(jobs)
-
 # Schedule the jobs for execution
-schedule(*jobs, backend=arguments.backend)
+schedule(merge, backend=arguments.backend)
 if arguments.backend == 'slurm':
     print('Jobs have been submitted!')
