@@ -28,7 +28,7 @@ finished[42] = False
 @after(a, status='any')
 @after(b)
 @ensure(lambda i: finished[i])
-@job(array=100)
+@job(array=range(100))
 def c(i: int):
     print(f'c{i}')
     finished[i] = True
