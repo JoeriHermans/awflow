@@ -1,18 +1,19 @@
-r"""Workflow graph components."""
+r"""Workflow graph components"""
 
-import inspect
-
-from functools import cached_property
+from functools import lru_cache
 from typing import Any, Callable, Dict, Iterator, List, Set, Tuple, Union
 
+from .utils import accepts
 
 
-class Node:
-    r"""Abstract graph node."""
+class Node(object):
+    r"""Abstract graph node"""
 
     def __init__(self, name: str):
         super().__init__()
+
         self.name = name
+
         self._children = {}
         self._parents = {}
 
@@ -30,10 +31,8 @@ class Node:
         node.add_child(self, edge)
 
     def rm_child(self, node: 'Node') -> None:
-        if node in self._children:
-            del self._children[node]
-        if self in node._parents:
-            del node._parents[self]
+        del self._children[node]
+        del node._parents[self]
 
     def rm_parent(self, node: 'Node') -> None:
         node.rm_child(self)
@@ -47,39 +46,84 @@ class Node:
         return list(self._parents)
 
 
-
 class Job(Node):
-    r"""Node in compute graph representing an executable job."""
+    r"""Job node"""
 
     def __init__(
         self,
-        fn: Callable,
+        f: Callable,
         name: str = None,
         array: Union[int, Set[int], range] = None,
+        env: List[str] = [],
+        settings: Dict[str, Any] = {},
         **kwargs,
     ):
-        super().__init__(fn.__name__ if name is None else name)
-        # Prepare job properties and their defaults
-        self._fn = fn
-        self.settings = {}
-        self.settings.update(kwargs)
+        super().__init__(f.__name__ if name is None else name)
+
         if type(array) is int:
             array = range(array)
+
+        if array is None or len(array) == 0:
+            assert accepts(f), 'job should not expect arguments'
+            array = None
+        else:
+            assert accepts(f, 0), 'job array should expect one argument'
+
+        self.f = f
+
         self.array = array
-        # Dependency behaviour
+
+        # Environment
+        self.env = env
+
+        # Settings
+        self.settings = settings.copy()
+        self.settings.update(kwargs)
+
+        # Dependencies
         self._waitfor = 'all'
-        # Postconditions.
+
+        # Conditions
+        self.preconditions = []
         self.postconditions = []
-        self.pruned = False
+
+    def _reducer_postconditions(self) -> Callable:
+        postconditions = self.postconditions
+
+        if self.array is None:
+            reducer = lambda: all([c() for c in postconditions])
+        else:
+            reducer = lambda i: all([c(i) for c in postconditions])
+
+        return reducer
+
+    def _reducer_preconditions(self) -> Callable:
+        preconditions = self.preconditions
+
+        def reducer(*args):
+            satisfied = True
+
+            for c in preconditions:
+                if accepts(c, 0):
+                    satisfied &= c(*args)
+                else:
+                    satisfied &= c()
+
+            return satisfied
+
+        return reducer
 
     @property
     def fn(self) -> Callable:
-        name, f, postconditions = self.name, self._fn, self.postconditions
+        name, f = self.name, self.f
+
+        pre = self._reducer_preconditions()
+        post = self._reducer_postconditions()
 
         def call(*args) -> Any:
+            assert pre(*args), f'job {name} does not satisfy its preconditions'
             result = f(*args)
-
-            assert _verify_postconditions(postconditions, *args), f'job {name} does not satisfy its postconditions.'
+            assert post(*args), f'job {name} does not satisfy its postconditions'
 
             return result
 
@@ -88,15 +132,32 @@ class Job(Node):
     def __call__(self, *args) -> Any:
         return self.fn(*args)
 
+    def __repr__(self) -> str:
+        if self.array is not None:
+            array = self.array
+
+            if type(array) is range:
+                array = f'[{array.start}:{array.stop}:{array.step}]'
+            else:
+                array = '[' + ','.join(map(str, array)) + ']'
+        else:
+            array = ''
+
+        return self.name + array
+
     @property
     def dependencies(self) -> Dict['Job', str]:
         return self._parents
 
     def after(self, *deps, status: str = 'success') -> None:
-        assert status in ['any', 'failure', 'success']
+        assert status in ['success', 'failure', 'any']
 
         for dep in deps:
             self.add_parent(dep, status)
+
+    def detach(self, *deps) -> None:
+        for dep in deps:
+            self.rm_parent(dep)
 
     @property
     def waitfor(self) -> str:
@@ -108,84 +169,122 @@ class Job(Node):
 
         self._waitfor = mode
 
-    def ensure(self, condition: Callable) -> None:
-        self.postconditions.append(condition)
+    def ensure(self, condition: Callable, when: str = 'after') -> None:
+        assert when in ['before', 'after']
 
-    @cached_property
-    def done(self) -> bool:
-        if len(self.postconditions) > 0:
-            is_done = True
-            for postcondition in self.postconditions:
-                sig = inspect.signature(postcondition)
-                if len(sig.parameters) >= 1:
-                    is_done &= all(map(postcondition, self.array))
-                else:
-                    is_done &= postcondition()
+        if self.array is None:
+            assert accepts(condition), 'postcondition should not expect arguments'
         else:
-            is_done = False
+            assert accepts(condition, 0), 'postcondition should expect one argument'
 
-        return is_done
+        if when == 'before':
+            self.preconditions.append(condition)
+        else:  # when == 'after'
+            self.postconditions.append(condition)
 
-    def prune(self) -> None:
-        if self.pruned:
-            return
-        self.pruned = True
+    @lru_cache(None)
+    def done(self, i: int = None) -> bool:
+        if not self.postconditions:
+            return False
+
+        reducer = self._reducer_postconditions()
+
+        if self.array is None:
+            return reducer()
+        elif i is None:
+            return all(map(reducer, self.array))
+        else:
+            return reducer(i)
+
+
+def dfs(*nodes, backward: bool = False) -> Iterator[Node]:
+    queue = list(nodes)
+    visited = set()
+
+    while queue:
+        node = queue.pop()
+
+        if node in visited:
+            continue
+        else:
+            yield node
+
+        queue.extend(node.parents if backward else node.children)
+        visited.add(node)
+
+
+def leafs(*nodes) -> Set[Node]:
+    return {
+        node for node in dfs(*nodes, backward=False)
+        if not node.children
+    }
+
+
+def roots(*nodes) -> Set[Node]:
+    return {
+        node for node in dfs(*nodes, backward=True)
+        if not node.parents
+    }
+
+
+def cycles(*nodes, backward: bool = False) -> Iterator[List[Node]]:
+    queue = [list(nodes)]
+    path = []
+    pathset = set()
+    visited = set()
+
+    while queue:
+        branch = queue[-1]
+
+        if not branch:
+            if not path:
+                break
+
+            queue.pop()
+            pathset.remove(path.pop())
+            continue
+
+        node = branch.pop()
+
+        if node in visited:
+            if node in pathset:
+                yield path + [node]
+            continue
+
+        queue.append(node.parents if backward else node.children)
+        path.append(node)
+        pathset.add(node)
+        visited.add(node)
+
+
+def prune(*jobs) -> List[Job]:
+    for job in dfs(*jobs, backward=True):
+        if job.done():
+            job.f = None
+            job.detach(*job.dependencies)
+        elif job.array is not None:
+            pending = {
+                i for i in job.array
+                if not job.done(i)
+            }
+
+            if len(pending) < len(job.array):
+                if len(pending) > 0:
+                    job.array = pending
+                else:
+                    job.array = None
 
         done = {
-            dep for dep, status in self.dependencies.items()
-            if dep.done
+            dep for dep, status in job.dependencies.items()
+            if dep.done() and status != 'failure'
         }
 
-        if self.waitfor == 'any' and done:
-            for dep in self.dependencies:
-                self.rm_parent(dep)
-        elif self.waitfor == 'all':
-            for dep in done:
-                self.rm_parent(dep)
+        if job.waitfor == 'any' and done:
+            job.detach(*job.dependencies)
+        elif job.waitfor == 'all':
+            job.detach(*done)
 
-        for dep in self.dependencies:
-            dep.prune()
-
-        if self.array is not None and len(self.postconditions) > 0:
-            pending = {
-                i for i in self.array
-                if not _verify_postconditions(self.postconditions, i)
-            }
-            if len(pending) < len(self.array):
-                self.array = pending
-
-
-def _verify_postconditions(postconditions: List[Callable], args: Any = None) -> bool:
-    verified = True
-    if len(postconditions) > 0:
-        for postcondition in postconditions:
-            sig = inspect.signature(postcondition)
-            if len(sig.parameters) >= 1:
-                verified &= postcondition(args)
-            else:
-                verified &= postcondition()
-
-    return verified
-
-
-def terminal_nodes(*roots, prune: bool = False) -> Set[Node]:
-    def search(job: Job) -> Set[Node]:
-        if len(job.children) == 0:
-            leafs = {job}
-        else:
-            leafs = set()
-            for child in job.children:
-                leafs.update(search(child))
-
-        return leafs
-
-    leafs = set()
-
-    for root in roots:
-        leafs.update(search(root))
-
-    if prune:
-        for leaf in leafs:
-            leaf.prune()
-
-    return leafs
+    return [
+        job for job in jobs
+        if not job.done()
+    ]

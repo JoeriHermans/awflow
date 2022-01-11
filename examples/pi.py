@@ -5,22 +5,15 @@ import sys
 import numpy as np
 import os
 
-from awflow import after, ensure, job, schedule, terminal_nodes
+from awflow import after, ensure, job, schedule, leafs
 
 
 
 # Prepare argument parser
 parser = argparse.ArgumentParser('awflow π demo.')
-parser.add_argument('--backends', action='store_true', help='Shows the available backends and exits.')
 parser.add_argument('--backend', type=str, default='local', help='Compute backend (default: local).')
 parser.add_argument('--partition', type=str, default=None, help='Partition to deploy the jobs on and can only be specified through the Slurm backend (default: none).')
 arguments, _ = parser.parse_known_args()
-
-
-# Show available backends if requested
-if arguments.backends:
-    print(awflow.available_backends())
-    sys.exit(0)
 
 
 ## BEGIN Workflow definition ###################################################
@@ -39,8 +32,8 @@ def estimate(i):
     np.save(f'pi-{i}.npy', pi_estimate)
 
 @after(estimate)
-@ensure(lambda: os.path.exists('pi.npy'))
-@ensure(lambda: True)  # You can add multiple postconditions!
+@ensure(lambda: len(glob.glob('*.npy')) == tasks, when='before')  # Check precondition before start at runtime
+@ensure(lambda: os.path.exists('pi.npy'))  # Postcondition
 @job(cpus='4', name='merge_and_show')  # Ability to overwrite job name
 def merge():
     files = glob.glob('pi-*.npy')
@@ -49,14 +42,10 @@ def merge():
     print('π ≅', pi_estimate)
     np.save('pi.npy', pi_estimate)
 
-r"""Find the terminal nodes of the specified root node (estimate)
-and prune the jobs from the workflow whose postconditions
-have been satisfied.
-"""
-leafs = terminal_nodes(estimate, prune=True)
-print(leafs)  # prints merge_and_show
+jobs = leafs(estimate)  # Find the leaf nodes of the graph
+print(jobs)
 
 # Schedule the jobs for execution
-schedule(*leafs, backend=arguments.backend, partition=arguments.partition)
+schedule(*jobs, backend=arguments.backend)
 if arguments.backend == 'slurm':
     print('Jobs have been submitted!')

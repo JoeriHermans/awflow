@@ -1,33 +1,42 @@
-r"""Scheduler backends."""
+r"""Scheduling backends"""
 
 import asyncio
-import cloudpickle as pickle
-import contextvars
+import cloudpickle as pkl
 import os
 import shutil
 
 from abc import ABC, abstractmethod
 from datetime import datetime
-from functools import lru_cache
-from functools import partial
 from pathlib import Path
 from subprocess import run
-from typing import Any, Callable, Dict, List
+from typing import Any, Dict, List
 
-from .workflow import Job
-
-
-
-class DependencyNeverSatisfiedException(Exception):
-    pass
+from .utils import to_thread
+from .workflow import Job, cycles, prune as _prune
 
 
-class JobNotFailedException(Exception):
-    pass
+def schedule(
+    *jobs,
+    backend: str = 'local',
+    prune: bool = True,
+    **kwargs,
+) -> List[Any]:
+    for cycle in cycles(*jobs, backward=True):
+        raise CyclicDependencyGraphError(' <- '.join(map(str, cycle)))
+
+    if prune:
+        jobs = _prune(*jobs)
+
+    scheduler = {
+        'local': LocalScheduler,
+        'slurm': SlurmScheduler,
+    }.get(backend)(**kwargs)
+
+    return asyncio.run(scheduler.gather(*jobs))
 
 
-class BaseScheduler(ABC):
-    r"""Abstract workflow scheduler."""
+class Scheduler(ABC):
+    r"""Abstract workflow scheduler"""
 
     def __init__(self, **kwargs):
         self.submissions = {}
@@ -46,8 +55,8 @@ class BaseScheduler(ABC):
         pass
 
 
-class LocalScheduler(BaseScheduler):
-    r"""Local scheduler."""
+class LocalScheduler(Scheduler):
+    r"""Local scheduler"""
 
     async def condition(self, job: Job, status: str) -> Any:
         result = await self.submit(job)
@@ -102,156 +111,166 @@ class LocalScheduler(BaseScheduler):
             return error
 
 
-class SlurmScheduler(BaseScheduler):
-    r"""Scheduler for the Slurm workload manager."""
+class SlurmScheduler(Scheduler):
+    r"""Slurm scheduler"""
 
     def __init__(
         self,
-        *jobs,
         name: str = None,
-        path: str = '.workflows',
+        path: str = '.dawgz',
+        shell: str = None,
+        env: List[str] = [],  # cd, virtualenv, conda, etc.
+        settings: Dict[str, Any] = {},
         **kwargs,
     ):
-        super().__init__(*jobs, **kwargs)
+        super().__init__()
+
+        assert shutil.which('sbatch') is not None, 'sbatch executable not found'
+
         if name is None:
             name = datetime.now().strftime('%y%m%d_%H%M%S')
+
         path = Path(path) / name
         path.mkdir(parents=True, exist_ok=True)
 
         self.name = name
-        self.partition = kwargs.get('partition', None)
         self.path = path.resolve()
+
+        # Environment
+        self.shell = os.environ['SHELL'] if shell is None else shell
+        self.env = env
+
+        # Settings
+        self.settings = settings.copy()
+        self.settings.update(kwargs)
+
+        self.translate = {
+            'cpus': 'cpus-per-task',
+            'gpus': 'gpus-per-task',
+            'ram': 'mem',
+            'timelimit': 'time',
+        }
+
+        # Identifier table
         self.table = {}
 
     def id(self, job: Job) -> str:
-        identifier = str(id(job))
+        if self.table.get(job.name, job) is job:
+            identifier = job.name
+        else:
+            identifier = str(id(job))
+
         self.table[identifier] = job
 
         return identifier
 
     async def _submit(self, job: Job) -> str:
-        # Wait for the dependencies to be submitted.
+        # Wait for dependencies to be submitted
         jobids = await asyncio.gather(*[
             self.submit(dep)
             for dep in job.dependencies
         ])
 
-        # Prepare the submission file.
+        # Write submission file
         lines = [
-            f"#!{os.environ['SHELL']}",
+            f'#!{self.shell}',
             '#',
             f'#SBATCH --job-name={job.name}',
-            '#SBATCH --export=ALL',
-            '#SBATCH --parsable',
-            '#SBATCH --requeue',
         ]
 
-        # Set the job partition
-        if self.partition:
-            lines.append(f'#SBATCH --partition={self.partition}')
-
-        # Prepare the potential array job and the logfile.
-        if job.array is None:
-            logfile = self.path / f'{job.name}_%j.log'
+        if job.array is None or job.empty:
+            logfile = self.path / f'{self.id(job)}_%j.log'
         else:
             array = job.array
+
             if type(array) is range:
                 lines.append('#SBATCH --array=' + f'{array.start}-{array.stop-1}:{array.step}')
             else:
                 lines.append('#SBATCH --array=' + ','.join(map(str, array)))
-            logfile = self.path / f'{job.name}_%j_%a.log'
-        lines.append(f'#SBATCH --output={logfile}')
 
-        # Specify the resources.
-        translate = {
-            'cpus': 'cpus-per-task',
-            'gpus': 'gpus-per-task',
-            'memory': 'mem',
-            'timelimit': 'time',
-        }
-        for key, value in job.settings.items():
-            key = translate.get(key, key)
+            logfile = self.path / f'{self.id(job)}_%j_%a.log'
+
+        lines.extend([f'#SBATCH --output={logfile}', '#'])
+
+        ## Settings
+        settings = self.settings.copy()
+        settings.update(job.settings)
+
+        if job.empty:
+            settings.update(self.minimal)
+
+        for key, value in settings.items():
+            key = self.translate.get(key, key)
+
             if value is None:
                 lines.append(f'#SBATCH --{key}')
             else:
                 lines.append(f'#SBATCH --{key}={value}')
 
-        # Specify job dependencies.
+        if settings:
+            lines.append('#')
+
+        ## Dependencies
         separator = '?' if job.waitfor == 'any' else ','
         keywords = {
             'success': 'afterok',
             'failure': 'afternotok',
             'any': 'afterany',
         }
+
         deps = [
             f'{keywords[status]}:{jobid}'
             for jobid, (_, status) in zip(jobids, job.dependencies.items())
         ]
+
         if deps:
-            lines.append('#SBATCH --dependency=' + separator.join(deps))
+            lines.extend(['#SBATCH --dependency=' + separator.join(deps), '#'])
 
-        # Dump the job and add the executor to the script.
+        ## Convenience
+        lines.extend([
+            '#SBATCH --export=ALL',
+            '#SBATCH --parsable',
+            '#SBATCH --requeue',
+            '',
+        ])
+
+        ## Environment
+        if job.env:
+            lines.extend([*job.env, ''])
+        elif self.env:
+            lines.extend([*self.env, ''])
+
+        ## Pickle function
         pklfile = self.path / f'{self.id(job)}.pkl'
-        with open(pklfile, 'wb') as f:
-            f.write(pickle.dumps(job.fn))
-        command = f'python -m awflow.bin.processor {pklfile}'
-        if job.array is not None:
-            command += ' $SLURM_ARRAY_TASK_ID'
-        lines.append(command)
 
-        # Save the generated script
+        with open(pklfile, 'wb') as f:
+            f.write(pkl.dumps(job.fn))
+
+        args = '' if job.array is None else '$SLURM_ARRAY_TASK_ID'
+        unpickle = f'python -c "import pickle; pickle.load(open(r\'{pklfile}\', \'rb\'))({args})"'
+
+        lines.extend([unpickle, ''])
+
+        ## Save
         bashfile = self.path / f'{self.id(job)}.sh'
+
         with open(bashfile, 'w') as f:
             f.write('\n'.join(lines))
 
         # Submit job
-        output = run(['sbatch', str(bashfile)], capture_output=True, check=True, text=True).stdout
-        for jobid in output.splitlines():
-            return jobid
+        text = run(['sbatch', str(bashfile)], capture_output=True, check=True, text=True).stdout
+        jobid, *_ = text.splitlines()
+
+        return jobid
 
 
-async def to_thread(func: Callable, /, *args, **kwargs) -> Any:
-    r"""Asynchronously run function `func` in a separate thread.
-
-    Any *args and **kwargs supplied for this function are directly passed
-    to `func`. Also, the current `contextvars.Context` is propagated,
-    allowing context variables from the main thread to be accessed in the
-    separate thread.
-
-    Return a coroutine that can be awaited to get the eventual result of `func`.
-
-    References:
-        https://github.com/python/cpython/blob/main/Lib/asyncio/threads.py
-    """
-
-    loop = asyncio.get_running_loop()
-    ctx = contextvars.copy_context()
-    func_call = partial(ctx.run, func, *args, **kwargs)
-
-    return await loop.run_in_executor(None, func_call)
+class CyclicDependencyGraphError(Exception):
+    pass
 
 
-def schedule(*jobs, backend: str, **kwargs) -> List[Any]:
-    assert backend in available_backends()
-
-    jobs = filter(lambda job: not job.done, jobs)  # Filter terminal nodes whose postconditions have been satisfied.
-    scheduler = {
-        'local': LocalScheduler,
-        'slurm': SlurmScheduler,
-    }.get(backend)(**kwargs)
-
-    return asyncio.run(scheduler.gather(*jobs))
+class DependencyNeverSatisfiedException(Exception):
+    pass
 
 
-def detect_slurm() -> bool:
-    output = shutil.which('sbatch')
-    return output != None and len(output) > 0
-
-
-@lru_cache(maxsize=None)  # @cache from Python 3.9
-def available_backends() -> List['str']:
-    backends = ['local']
-    if detect_slurm():
-        backends.append('slurm')
-
-    return backends
+class JobNotFailedException(Exception):
+    pass

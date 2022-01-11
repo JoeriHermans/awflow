@@ -1,7 +1,3 @@
-## This repo has been moved to [https://github.com/francois-rozet/dawgz](https://github.com/francois-rozet/dawgz).
-
----
-
 Reproducible research and reusable acyclic workflows in Python. Execute code on HPC systems as if you executed them on your machine!
 
 ## Motivation
@@ -112,19 +108,6 @@ If you would like to run the examples as well, be sure to install the *optional*
 ```console
 you@local:~ $ pip install 'awflow[examples]'
 ```
-
-## Roadmap and TODO
-
-- [ ] Add utilities for common post-conditions.
-- [ ] Should `schedule` return metadata of jobs and workflow?
-- [ ] Check for cyclic dependencies.
-- [ ] More examples and documentation.
-- [ ] Utilities to cleanup generated metadata and crashed jobs for the Slurm backend.
-- [ ] Can jobs submit jobs on both local and Slurm backend?
-
-## Contributing
-
-See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## License
 

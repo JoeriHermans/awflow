@@ -1,4 +1,4 @@
-from awflow import after, job, schedule, terminal_nodes
+from awflow import after, job, schedule, leafs
 
 @job(cpus='2', memory='4GB', array=5)
 def generate(i: int):
@@ -27,5 +27,4 @@ def do_experiment(parameter):
 for parameter in [0.1, 0.2, 0.3, 0.4, 0.5]:
     do_experiment(parameter)
 
-leafs = terminal_nodes(generate, prune=True)  # Find terminal nodes of workflow graph
-schedule(*leafs, backend='local')
+schedule(*leafs(generate), backend='local')

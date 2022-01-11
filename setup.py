@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-"""The setup script."""
-
+import awflow
 import glob
 import os
 import shutil
@@ -50,7 +49,6 @@ setup(
     ],
     description='Reusable acyclic workflows in Python. Execute code on HPC systems as if you executed them on your laptop!',
     extras_require={
-        'dev': _load_requirements('requirements_dev.txt'),
         'examples': _load_requirements('requirements_examples.txt'),
     },
     include_package_data=True,
@@ -70,9 +68,9 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/JoeriHermans/awflow',
-    version='0.1.0',
+    version=awflow.__version__,
     zip_safe=False,
     entry_points = {
         'console_scripts': [],
-        },
+    },
 )

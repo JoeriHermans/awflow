@@ -1,7 +1,7 @@
 import awflow
 import time
 
-from awflow import job, after, waitfor, disable, ensure, schedule, terminal_nodes
+from awflow import job, after, waitfor, disable, ensure, schedule, leafs
 
 
 @job
@@ -46,7 +46,4 @@ def d():
 def e():
     print('e')
 
-leafs = terminal_nodes(a, prune=True)  # Search for terminal nodes of `a` and prune automatically
-print(leafs)  # prints {d, e}
-
-schedule(*leafs, backend='local')  # prints a a c42 d e d (e is executed concurrently by asyncio)
+schedule(*leafs(a), backend='local')  # prints a a c42 d e d (e is executed concurrently by asyncio)
